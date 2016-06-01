@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="SourceFiles"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="SourceFiles/finch.jar"/>
+	<classpathentry kind="lib" path="SourceFiles/jnaerator-0.9.5.jar"/>
+	<classpathentry kind="lib" path="SourceFiles/libcivil.so"/>
+	<classpathentry kind="lib" path="SourceFiles/libhidapi32.so"/>
+	<classpathentry kind="lib" path="SourceFiles/libhidapi64.so"/>
+	<classpathentry kind="output" path="SourceFiles"/>
+</classpath>

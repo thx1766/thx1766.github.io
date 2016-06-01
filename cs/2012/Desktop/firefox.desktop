@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Mozilla Firefox
+Comment=optional
+Exec=/usr/bin/firefox %u
+Icon=firefox
+Terminal=false
+Type=Application

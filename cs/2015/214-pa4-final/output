@@ -1,0 +1,18 @@
+<list> word0
+itestdir//file0 1 
+</list>
+<list> word1
+itestdir//file0 1 itestdir//file3 1 
+</list>
+<list> word2
+itestdir//file0 1 itestdir//file2 1 itestdir//file3 1 
+</list>
+<list> word3
+itestdir//file1 1 itestdir//file2 1 itestdir//file3 1 
+</list>
+<list> word4
+itestdir//file1 1 itestdir//file2 1 
+</list>
+<list> word5
+itestdir//file1 1 
+</list>

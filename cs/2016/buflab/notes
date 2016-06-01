@@ -1,0 +1,16 @@
+$ebp address to point to:
+0xbfffb3e8
+
+set address to beginning of space: $ebp+12: 0xbfffb3f4
+
+$esp-4 gets set to 0x08048db0, address b08d0408, where smoke begins
+
+everything is relative to $esp
+want to set 0xbfffb3ec as starting code address for beginning of buffer
+
+step twice and see where we've landed in the code
+0xbfffb3ec -> reverse to ec b3 ff bf
+
+bang: 0x08048cf0 -> f0 8c 04 08
+cookie: 0x4a276234
+cookie mem location: [0x804a1bc]

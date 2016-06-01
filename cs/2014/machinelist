@@ -1,0 +1,45 @@
+(<group><machine>)
+<command>.cs.rutgers.edu
+	<cd>
+	<cp>
+	<grep>
+	kill
+less
+ls
+man
+pwd
+rm
+top
+vi
+<language>.cs.rutgers.edu
+assembly
+basic
+cpp
+java
+lisp
+pascal
+perl
+php
+prolog
+<design_pattern>.cs.rutgers.edu
+adapter
+builder
+command
+composite
+decorator
+design
+facade
+factory
+flyweight
+interpreter
+mediator
+null
+patterns
+prototype
+singleton
+specification
+state
+strategy
+template
+utility
+visitor

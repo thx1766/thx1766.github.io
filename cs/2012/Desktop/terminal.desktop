@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Terminal
+Type=Application
+Terminal=false
+Exec=/usr/bin/gnome-terminal
+Comment=manditory
+Icon=/usr/local/share/desktop-icons/etc/images/terminal.png

@@ -1,0 +1,6 @@
+CC=gcc
+CFLAGS=-Wall
+TLIB=-lpthread
+
+all:
+	$(CC) $(CFLAGS) $(TLIB) -o bookorder bookorder.c

@@ -1,0 +1,17 @@
+1) Instructions
+	To run this program, navigate to the directory containing the extracted files, and run make (or make wordstat) to compile the executable.
+	Launch the executable by running "./wordstat" with the proper options. Launching without any arguments displays the arguments menu.
+	To remove any temporary .o files or executables, run make clean.
+2) Summary of design
+	The application parses the command line arguments, which are used to select program functionality.
+	Based on the command line option provided, the main function launches a function taylored to a specific purpose.
+	The line-count function just uses fgets to retrieve a line from the file at a time, and returns the number of lines it found.
+	The word-count function works similarly, but inserts words split from the line from fgets and inserts them into a linked list, then uses a function to add the values together.
+	The palindrome and palindrome count functions work similarly to the word-count, but only insert "words" that are palindromes. The frequency is tracked by the linked list, and the option just specifies whether it should print the number or not.
+3) Running time analysis
+	The runtime of this program should be O(n^2), because I'm inserting elements into a linked list. The "best case" would be a list sorted reverse-alphabetically, because inserting requires only looking at the first node and inserting the new node before it. Worst case is a list already sorted alphabetically, because insertion requires traversing the full list before an insertion can be made.
+4) Space requirement analysis
+	I used dynamic allocation for the linked list, nodes, and strings within the nodes, which are freed when no longer needed. I implemented this by the function destroylist, and called it whenever the list was no longer needed.
+5) Challenges encountered
+	I put off starting the assignment for too long, and then put off finishing it longer than I should have.
+	I completed some simple progams in C, and thought that I would have enough time to complete the assignment in the time I gave myself, but debugging C was a lot more time-intensive than I anticipated.

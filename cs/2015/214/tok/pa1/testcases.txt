@@ -1,0 +1,73 @@
+testcases
+
+format:
+
+input:
+expected output:
+
+case0
+“\n” “hello\nworld”
+hello
+world
+
+case1
+"m" "mmmmm"
+
+case2
+"e\v\t" "hel\vlo \tworld"
+h
+l
+lo
+world
+
+case3
+"" "You have to print out the hex of \a"
+You have to print out the hex of [0x07]
+
+case4
+"\n" ""
+
+case5
+"\k" "hello\kworld"
+hello
+world
+
+case6
+"k" "hello\kworld"
+hello
+world
+
+case7
+"\\\\" "\\\\\\hello\\\\\\world\\\\"
+hello
+world
+
+case8
+"\b\le" "ShE sells sEa shells by the sEa shorE\\"
+ShE s
+s sEa sh
+s by th
+ sEa shorE
+
+case9
+"\k\\" "hello\kworld"
+hello
+world
+
+case10
+"" "\\\""
+[0x22]
+
+case11
+<too few arguments>
+wrong number of arguments
+
+Usage of Tokenizer:
+~\tokenizer <separator characters> <token stream>
+
+case12
+<too many arguments>
+wrong number of arguments
+
+Usage of Tokenizer:
+~\tokenizer <separator characters> <token stream>

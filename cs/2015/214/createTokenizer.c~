@@ -1,0 +1,73 @@
+//#include "stdio.h"
+//#include "stdlib.h"
+//#include "tokenList.h"
+//#include "tokenNode.h"
+//#include "createList.h"
+//#include "createNode.h"
+
+tList* createTokenizer(char* separators, char* tokens){
+	tList* result;
+	tNode* firstNode;
+	result=createList();
+//start main logic
+//three cases based on input: tokens NULL, separators NULL, neither NULL
+//if tokens are null then the list contains one node that is empty
+//if separators are null then the list contains one node containing the full string
+//if neither are null, proceed normally
+//case1
+	if(tokens==NULL){
+		firstNode=createNode(NULL, 0, NULL);
+		result->size=0;
+		result->first=firstNode;
+	}
+//case2
+	else if(separators==NULL){
+		firstNode=createNode(tokens, 0, NULL);
+		result->size=1;
+		result->first=firstNode;
+	}
+//case3
+	else{
+	//	result=(tList*) processTokens(separators, tokens);
+		tList* newlist=createList();
+		newlist=(tList*)processTokens(NULL, NULL);
+	}
+//end main logic
+	return (tList*)result;
+	}
+
+tList* processTokens(char* separators, char* tokens){
+	int tindex=0;
+	int tlength=strlen(tokens); 
+	tList* result;
+	result=createList();
+	result->size=0;
+	tNode* tempNode = (tNode*)malloc(sizeof(tNode));
+	tNode* previous = (tNode*)malloc(sizeof(tNode));
+	char* tempString="";
+while(tindex<tlength){
+	char* tempChar=malloc(sizeof(char)*2);
+	tempChar[0] = tokens[tindex];
+	tempChar[1] = '\0';
+//	if(!isInSeps(tokens[tindex])){
+	if(1){
+		strcat(tempString,tempChar);
+	}else{
+		if(result->size==0 && tempString!=""){
+			tempNode=createNode(tempString, 0, NULL);
+			tempString="";
+			result->first=tempNode;
+			previous=tempNode;
+			result->size++;
+		}else if(tempString!=""){
+			tempNode=createNode(tempString, result->size, NULL);
+			tempString=="";
+			previous->nextNode=tempNode;
+			previous=tempNode;
+			result->size++;
+		}
+	}
+	tindex++;
+}
+return (tList*)result;
+}

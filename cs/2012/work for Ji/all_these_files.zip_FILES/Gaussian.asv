@@ -1,0 +1,9 @@
+x = 0:.1:20;
+mu = 22;
+sigma = 5;
+strech = 400;
+pdfNormal = normPdf(x, mu, sigma);
+hold off
+plot(bin,'o')
+hold on
+plot(x, pdfNormal*strech)

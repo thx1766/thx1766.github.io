@@ -1,0 +1,287 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{latexsym}
+\usepackage{times}
+%\usepackage{psfrag,psfig,epsfig,epsf}
+\usepackage{graphics}
+\usepackage{multirow}
+\usepackage{fullpage}
+\usepackage{verbatim}
+\usepackage{fancyheadings}
+\usepackage[T1]{fontenc}
+\usepackage{arev}
+\usepackage{subfigure}
+\usepackage{url}
+\usepackage[noline,noend,ruled,linesnumbered]{algorithm2e}
+\usepackage{algpseudocode}
+\linespread{1.02} 
+
+\pagestyle{empty}
+
+\addtolength{\topmargin}{-20pt}
+\addtolength{\oddsidemargin}{-5pt}
+\addtolength{\textwidth}{20pt}
+\addtolength{\textheight}{50pt}
+
+\newenvironment{myitem}{\begin{list}{$\bullet$}
+{\setlength{\itemsep}{-0pt}
+\setlength{\topsep}{0pt}
+\setlength{\labelwidth}{0pt}
+%\setlength{\labelsep}{0pt}
+\setlength{\leftmargin}{10pt}
+\setlength{\parsep}{-0pt}
+\setlength{\itemsep}{0pt}
+\setlength{\partopsep}{0pt}}}%
+{\end{list}}
+
+\begin{document}
+
+\sloppy
+
+\noindent \underline{CS 344: DESIGN AND ANALYSIS OF COMPUTER
+  ALGORITHMS \hspace{1.6in} SPRING 2014}
+
+\vspace{0.1in}
+
+\begin{center}
+{\bf {\large Homework 2}}\\
+Divide-and-Conquer Algorithms, Sorting Algorithms, Greedy Algorithms\\
+\end{center}
+
+\vspace{0.1in}
+
+\noindent Deadline: March 14, 11:59pm.\\ 
+Available points: 110. Perfect score: 100.\\
+
+\begin{center}
+{\bf Homework Instructions:}
+\end{center}
+
+\noindent {\bf Teams:} Homeworks should be completed by teams of
+students - three at most. No additional credit will be given for
+students that complete a homework individually. Please inform
+Athanasios Krontiris {\bf if your team has changed from the previous
+  assignment.} (email: ak979 AT cs.rutgers.edu).\\
+
+\noindent {\bf Submission Rules:} Submit your solutions electronically
+as a PDF document through \url{sakai.rutgers.edu}. Do not submit Word
+documents, raw text, or hardcopies etc. Make sure to generate and
+submit a PDF instead. Each team of students should submit only a
+single copy of their solutions and indicate all team members on their
+submission.  Failure to follow these rules will result in lower grade
+in the assignment.\\
+
+\noindent {\bf Late Submissions:} No late submission is allowed. If
+you don't submit a homework on time, you get 0 points for that
+homework.\\
+
+\noindent {\bf Extra Credit for \LaTeX:} You will receive 10\% extra
+credit points if you submit your answers as a typeset PDF (using
+\LaTeX, in which case you should also submit electronically your
+source code). Resources on how to use \LaTeX\ are available on the
+course's website. There will be a 5\% bonus for electronically
+prepared answers (e.g., on MS Word, etc.) that are not typeset.\\
+
+\noindent {\bf 25\% Rule:} For any homework problem (same will hold
+for exam questions), you can either attempt to answer the question, in
+which case you will receive between 0 and 100\% credit for that
+question (i.e., you can get partial credit), or you can write "I don't
+know", in which case you receive 25\% credit for that question.
+Leaving the question blank is the same as writing "I don't know." You
+can and will get less than 25\% credit for a question that you answer
+erroneously.\\
+
+\noindent {\bf Handwritten Reports:} If you want to submit a
+handwritten report, scan it and submit a PDF via Sakai. We will not
+accept hardcopies. If you choose to submit handwritten answers and we
+are not able to read them, you will not be awarded any points for the
+part of the solution that is unreadable.\\
+
+\noindent {\bf Precision:} Try to be precise. Have in mind that you
+are trying to convince a very skeptical reader (and computer
+scientists are the worst kind...) that your answers are correct.\\
+
+\noindent {\bf Collusion, Plagiarism, etc.:} Each team of students
+must prepare its solutions independently from other teams, i.e.,
+without using common notes or worksheets with other students or trying
+to solve problems in collaboration with other teams.  You must
+indicate any external sources you have used in the preparation of your
+solution. Do not plagiarize online sources and in general make sure
+you do not violate any of the academic standards of the course, the
+department or of the university (the standards are available through
+the course's website). Failure to follow these rules may result in
+failure in the course.\\
+
+\newpage
+
+\vspace{0.1in}
+
+{\bf }
+
+\begin{center}
+{\bf Part A (20 points)}
+\end{center}
+
+\noindent {\bf Problem 1:} The more general version of the Master
+Theorem is the following. Given a recurrence of the form: 
+$$T(n) = a T(\frac{n}{b}) + f(n)$$
+where $a \geq 1$ and $b > 1$ are constants and $f(n)$ is an
+asymptotically positive function, there are 3 cases: 
+\begin{enumerate}
+\item If $f(n) = O(n^{log_ba - \epsilon}$) for some constant $\epsilon
+  > 0$, then $T(n) = \Theta(n^{log_ba})$.
+\item If $f(n) = \Theta(n^{log_ba} log^kn)$ with $k \geq 0$, then
+  $T(n) = \Theta(n^{log_ba} log^{k+1}n)$. In most cases, $k = 0$.
+\item If $f(n) = \Omega(n^{log_ba+\epsilon})$ with $\epsilon > 0$, and
+  $f(n)$ satisfies the regularity condition, then $T(n) = \Theta( f(n)
+  )$. The regularity condition specifies that $a f(\frac{n}{b}) \leq c
+  f(n)$ for some constant $c < 1$ and all sufficiently large $n$.
+\end{enumerate}
+
+\noindent Give asymptotic bounds for the following recurrences. Assume
+$T(n)$ is constant for $n = 1$. Make your bounds as tight as possible,
+and justify your answers.\\
+
+\noindent A. $T(n) = 2T(\frac{n}{4}) + n^{0.51}$\\
+\noindent B. $T(n) = 16 T(\frac{n}{4}) + n!$\\
+\noindent C. $T(n) = \sqrt{2} T(\frac{n}{2}) + logn$\\
+\noindent D. $T(n) = T(n-1) + lgn$\\
+\noindent E. $T(n) = 5T(n/5) + \frac{n}{lgn}$\\
+
+\begin{center}
+{\bf Part B (25 points)}
+\end{center}
+
+\noindent {\bf Problem 2:} You are in the HR department of a
+technology firm, and here is a job for you.  There are $n$ different
+projects, and $n$ different programmers.
+
+Every project has its unique payoff when completed and level of
+difficulty (which are uniform, regardless which programmer will work
+on the project).  Every programmer has a unique skill set as well as
+expectations for compensation (which are uniform, regardless the
+project the programmer will work on). You cannot directly collect
+information that allows you to compare the payoff or difficulty level
+of two projects, or the capability or expectations for compensation of
+two programmers.
+
+Instead, you can arrange a meeting between each project manager and
+programmer.  In each meeting, the project manager will give the
+programmer an interview to see whether the programmer can do the
+project; the programmer can ask the project manager about the
+compensation to see whether it meets her expectations.  After the
+meeting, you can get a result based on the feedback of the project
+manager and the programmer.  The result can be:
+
+\begin{enumerate}
+  \item The programmer can't do the project.
+  \item The programmer can do the project, but the compensation of the
+    project doesn't meet her expectation.
+  \item The programmer can do the project, and the compensation for
+    the project matches her expectations. At this time, we say the
+    project and the programmer \textit{match} with each other.
+\end{enumerate}
+
+Assume that the projects and programmers match one to one. Your goal
+is to match each programmer to a project.
+
+{\bf A.} Show that any algorithm for this problem must need $\Omega( n
+\log{n} )$ meetings in the worst case.
+
+{\bf B.}  Design a randomized algorithm for this problem that runs in
+expected time $O ( n \log{n} )$.
+
+\newpage
+
+\begin{center}
+{\bf Part C (40 points)}
+\end{center}
+
+
+\noindent {\bf Problem 3:} A nation-wide programming contest is held
+at $k$ universities in North America. The $i^{th}$ university has
+$m_{i}$ participants. The total number of participants is $n$, i.e.,
+$n = \sum_{i=1}^{k}m_{i}$. In the contest, participants have to write
+programs to solve 6 problems. Each problem contains 10 test cases,
+each test case is worth 10 points. Participants aim to maximize their
+collected points.  
+
+After the contest, each university sorts the scores of participants
+belonging to it and submits the grades to the organizer.  Then the
+organizer has to collect the sorted scores of participants and provide
+a final sorted list for all participants.
+
+\begin{enumerate}
+
+\item For each university, how do they sort the scores of participants
+  belonging to it? Please briefly describe a comparative sorting
+  algorithm that is appropriate for this purpose and a non-comparative
+  sorting algorithm that works in this setup.
+
+\item How does the organizer sort the scores of participants given $k$
+  files, where each file includes the sorted scores of participants
+  from a specific university?  Please describe an algorithm with a
+  $O(n\log k)$ running time and justify its time complexity.
+
+\item Suppose the organizer want to figure out the participants of
+  ranking $r$. Given $k$ sorted files, how does the organizer find the
+  $r^{th}$ largest score without sorting the scores of participants?
+  (e.g. if r = 5 you need to compute the $5^{th}$ largest score, not 
+  the top 5 scores). Please describe an algorithm in $O(k(\sum_{i=1}^{k}\log m_{i}))$ 
+  time and justify its time complexity. 
+
+Could you do this in $O(\log k (\sum_{i=1}^{k}\log m_{i} + k))$ time? 
+
+  [Hint: If $r$ is smaller than $\dfrac{n}{2}$, the elements that have at least $\dfrac{n}{2}$ 
+  elements smaller than them should not be possible answer. The problem is how to identify these
+  elements.]\\
+
+\end{enumerate}
+
+
+\noindent {\bf Problem 4:} You have a collection of $n$ New York Times
+crossword puzzles from 01/01/1943 until 12/31/2012 stored in a
+database. The only operations that you can perform to the database are
+the following:
+\begin{itemize}
+\item crossword\_puzzle $x$ $\leftarrow$ getPuzzle( int index ); where the
+  index is between $1$ and $n$; the puzzles are \emph{not} sorted in the
+  database in terms of the date they appeared.
+\item getDay( crossword\_puzzle x ); which returns a number between 1
+  to 31.
+\item getMonth( crossword\_puzzle x ); which returns a number between
+  1 to 12.
+\item getYear( crossword\_puzzle x ); which returns a number between
+  1943 to 2012.
+\end{itemize}
+All of the above queries can be performed in constant time. You have
+found out that the number of puzzles is less than the number of days
+in the above period (from 01/01/1943 until 12/31/2012) by one, i.e.,
+one crossword puzzle was not included in the database. We need to
+identify the date of the missing crossword puzzle.
+
+Design a linear-time algorithm that minimizes the amount of space that
+it is using to find the missing date. Ignore the effect of leap years.
+
+
+\begin{center}
+{\bf Part D (25 points)}
+\end{center}
+
+\noindent {\bf Problem 5:} You are running a promotional event for a
+company during which the plan is to distribute $n$ gifts to the
+participants. Consider that each gift $i$ is worth an integer number
+of dollars $a_i$. There are $m$ people participating in the event,
+where $m < n$. The $j$-th person is satisfied if he receives gifts
+that are worth at least $s_j$ dollars each. The task is to satisfy as
+many people as possible given that you have a knowledge of the gift
+amounts $a_i$ and the satisfaction requirements of each person
+$s_j$. Give an approximation algorithm for assigning rewards to people
+with a running time of $O(m\log m+n)$. What is the approximation ratio
+of your algorithm and why?
+
+
+\end{document}
+

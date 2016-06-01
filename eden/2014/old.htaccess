@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Restricted files"
+AuthUserFile /empyrean/u2/schaffna/pw_share_notes
+require user share

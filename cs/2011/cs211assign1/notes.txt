@@ -1,0 +1,20 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+//calling this sub-program AlphabetizedPalindromeFrequencyList - pallist.c
+
+//define the node thing
+	struct palNode{
+		char palindrome[256];
+		struct palNode *next; //
+		}
+
+
+//self ordered linked list of palindrome-nodes
+// 	constructor
+		void apfl(){
+			
+			}
+			
+			

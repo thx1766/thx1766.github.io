@@ -1,0 +1,52 @@
+testcase 1 for so()
+<list> funny
+inputDir//input1 1
+</list>
+<list> hello
+inputDir//input1 1
+</list>
+<list> kitty
+inputDir//input1 1
+</list>
+
+input: so hello
+input: so hello kitty
+input: so hello kitty funny
+
+the output:  [inputDir//input1]
+
+testcase2 for so()
+list> bunny
+inputDir//input2 1 inputDir//input3 1
+</list>
+<list> cute
+inputDir//input3 1
+</list>
+<list> funny
+inputDir//input1 1 inputDir//input2 1
+</list>
+<list> hello
+inputDir//input1 1 inputDir//input2 1 inputDir//input3 1 inputDir//input4 1
+</list>
+<list> kitty
+inputDir//input1 1
+</list>
+<list> lol
+inputDir//input2 1
+</list>
+<list> meow
+inputDir//input4 1
+</list>
+<list> world
+inputDir//input4 1
+</list>
+
+input: so funny bunny omg
+the filename is [inputDir//input1]
+the filename is [inputDir//input2]
+the filename s [inputDir//input3]
+
+input: so funny world lol meow
+the filename is [inputDir//input1]
+the filename is [inputDir//input2]
+the filename is [inputDir//input4]

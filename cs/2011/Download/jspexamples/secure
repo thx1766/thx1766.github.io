@@ -1,0 +1,9 @@
+<%
+	// check if the current session has the attribute 'current_user'
+	String user = (String)session.getAttribute("current_user");
+	if (user == null) {
+		out.println("<b> You must login to access this page! </b> <br> <a href=logon.html> Login </a> </body> </html>");
+		return;
+	}
+%>
+<b> Hello <%=user%>!</b>

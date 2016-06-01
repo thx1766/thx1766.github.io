@@ -1,0 +1,18 @@
+<list> a
+ 6 
+</list>
+<list> b
+ 4 
+</list>
+<list> c
+ 2 
+</list>
+<list> d
+ 2 
+</list>
+<list> e
+ 3 
+</list>
+<list> o
+ 2 
+</list>

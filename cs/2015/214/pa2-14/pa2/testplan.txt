@@ -1,0 +1,9 @@
+Test plan for code, including input and expected output.
+
+Main.c demonstrates use of various functions
+
+Function main() calls function test()
+
+Function test tests SLCreate and SLInsert, and demonstrates use of SLPrint
+
+Comments in function main demonstrate use, but are commented out for this late resubmission, as I haven't finished rearranging, but don't know the limit for resubmissions

@@ -1,0 +1,71 @@
+package traceroutestandard;
+
+import java.io.*;
+import java.net.*;
+
+public class traceroute {
+//launches threads for different parts of the application
+	
+	//goal of project: implement traceroute
+	//special case: we must use a voslab machine as a "virtual router" to create packets for us
+	//				192.168.51.117 port 3000 - accepts network messages as payload of UDP packet
+	//command line argument: ip address of destination machine
+	//talking to voslab server:
+				//construct information that would otherwise be IP header and ICMP header
+				//java class NetworkMessage will contain public methods for IP header and ICMP header classes
+				//classes will have just public data members, no methods
+				//fill in atomic fields of IP header and ICMP header objects, concatenate them, make it payload of UDP packet
+				//server creates network-level message, sends it, recieves ICMP response, constructs NetworkMessage as response
+	//I am responsible for:
+	//figuring out how to send and recieve UDP packets
+	//filling in the fields of the IP header and ICMP header class instances
+	//interpreting the fields of the IP header and ICMP header.
+	//finding the right Java classes (e.g InetAddress et al) to deal with IP addresses.
+	public static void main(String args[]){
+		String ipaddress = args[0];
+		//output one ipaddress per line, so loop to do that
+		//while (ip returned is not destination ip)
+		//last line of output should be the destination ip
+		
+		
+
+	}
+	public InetAddress talkToServer(IPheader ipheader, IcmpHdr icmpheader) throws Exception{
+		//takes ipheader and icmpheader and creates and sends a NetworkMessage to the server
+
+		//procedure for sending data adapted from code in text page 172-3 "UDPClient.java"
+		//make socket
+		//make ipaddress
+		//make byte array for send data 
+		//make send data byte array equal to value from something that supports method getBytes();
+		//make a DatagramPacket from send data 
+		//call method send() on socket with constructed datagrampacket
+		//
+		//procedure for receiving data
+		//create empty datagrampacket to "catch" data coming from socket
+		//call method recieve() on socket, put recieved data into the packet just created
+		//extract data by calling method getData on the datagrampacket now that it's been "filled"
+		//close socket by calling method close()
+		DatagramSocket mysocket = new DatagramSocket();
+		//InetAddress serveraddress = InetAddress.getByName("192.168.51.117");
+		NetworkMessage mymessage = new NetworkMessage();
+		mymessage.icmpHdr=icmpheader;
+		mymessage.ipHeader=ipheader;
+		//byte[] messagebyte = mymessage.getBytes();
+		//DatagramPacket mypacket = new DatagramPacket(messagebyte, 0, serveraddress, 3000);
+		DatagramPacket mypacket = new DatagramPacket(mymessage.getBytes(), mymessage.getBytes().toString().length(), InetAddress.getByName("192.168.51.117"), 3000);
+		mysocket.send(mypacket);
+		byte[] recievemessage=new byte[mymessage.getBytes().toString().length()];
+		DatagramPacket serverpacket = new DatagramPacket(recievemessage,recievemessage.toString().length());
+		mysocket.receive(serverpacket);
+		NetworkMessage servernetworkmessage = new NetworkMessage();
+		servernetworkmessage.set(serverpacket.getData());
+		mysocket.close();
+		//return servernetworkmessage;
+		IcmpHdr responseicmp = servernetworkmessage.icmpHdr;
+		IPheader responseip = servernetworkmessage.ipHeader;
+		return (new InetAddress()).getByName(((Integer)responseip.saddr).toString());
+		
+		
+	}
+}

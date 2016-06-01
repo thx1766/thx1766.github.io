@@ -1,0 +1,66 @@
+package traceroutestandard;
+
+import java.io.*;
+
+public class NetworkMessage {
+
+	IPheader	ipHeader;
+	IcmpHdr		icmpHdr;
+
+	public NetworkMessage()
+	{
+		ipHeader = new IPheader();
+		icmpHdr = new IcmpHdr();
+	}
+
+	public byte [] getBytes() throws IOException
+	{
+		ByteArrayOutputStream	byteOutput = new ByteArrayOutputStream();
+		ObjectOutputStream	objectOutput = new ObjectOutputStream( byteOutput );
+
+		objectOutput.writeByte( ipHeader.ihl );
+		objectOutput.writeByte( ipHeader.version );
+		objectOutput.writeByte( ipHeader.tos );
+		objectOutput.writeShort( ipHeader.tot_len );
+		objectOutput.writeShort( ipHeader.id );
+		objectOutput.writeByte( ipHeader.flags );
+		objectOutput.writeShort( ipHeader.frag_off );
+		objectOutput.writeByte( ipHeader.ttl );
+		objectOutput.writeByte( ipHeader.protocol );
+		objectOutput.writeShort( ipHeader.checksum );
+		objectOutput.writeInt( ipHeader.saddr );
+		objectOutput.writeInt( ipHeader.daddr );
+		objectOutput.writeByte( icmpHdr.type );
+		objectOutput.writeByte( icmpHdr.code );
+		objectOutput.writeShort( icmpHdr.checksum );
+		objectOutput.writeShort( icmpHdr.id );
+		objectOutput.writeShort( icmpHdr.sequence );
+		objectOutput.close();
+		return byteOutput.toByteArray();
+	}
+
+	public void set( byte [] byteArray ) throws IOException
+	{
+		ByteArrayInputStream	byteInput = new ByteArrayInputStream( byteArray );
+		ObjectInputStream	objectInput = new ObjectInputStream( byteInput );
+
+		ipHeader.ihl = objectInput.readByte();
+		ipHeader.version = objectInput.readByte();
+		ipHeader.tos = objectInput.readByte();
+		ipHeader.tot_len = objectInput.readShort();
+		ipHeader.id = objectInput.readShort();
+		ipHeader.flags = objectInput.readByte();
+		ipHeader.frag_off = objectInput.readShort();
+		ipHeader.ttl = objectInput.readByte();
+		ipHeader.protocol = objectInput.readByte();
+		ipHeader.checksum = objectInput.readShort();
+		ipHeader.saddr = objectInput.readInt();
+		ipHeader.daddr = objectInput.readInt();
+		icmpHdr.type = objectInput.readByte();
+		icmpHdr.code = objectInput.readByte();
+		icmpHdr.checksum = objectInput.readShort();
+		icmpHdr.id = objectInput.readShort();
+		icmpHdr.sequence = objectInput.readShort();
+		objectInput.close();
+	}
+}

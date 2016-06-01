@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=/freespace/local
+Type=Application
+Terminal=false
+Exec=/usr/bin/nautilus /freespace/local
+Comment=optional
+Icon=/usr/local/share/desktop-icons/etc/images/icon-filemanager.png

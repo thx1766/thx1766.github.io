@@ -1,0 +1,50 @@
+main
+	splash
+	init save load
+	init code tree
+	init studio (code tree)
+	init editors
+		init vworld map editor
+		init pworld map editor
+		init code editor
+	init graphical elements
+	init action listeners
+	close splash
+	launch studio
+studio
+	1) edit
+	2) map
+	3) run
+	-> check for errors
+	4) macro
+	---------
+	1) save/load
+	2) button
+
+interpreter (runs in seperate thread which can be halted)
+	load graphical
+	run code tree (instruction tree, map)
+	stop
+	display progress
+
+macro editor
+	save/load
+	buttons
+
+macro manager
+	add/ remove
+	edit name
+	edit macro
+
+map editor
+	load/ save map
+	button (edit)
+
+map
+	size
+	structure
+		blocks
+			get type
+			get location
+		movable block
+			move (direction)

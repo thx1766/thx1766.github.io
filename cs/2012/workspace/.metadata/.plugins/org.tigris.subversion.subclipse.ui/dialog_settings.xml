@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="604" key="passwordStores.size.y"/>
+	<item value="1503" key="passwordStores.size.x"/>
+	<item value="413" key="passwordStores.location.y"/>
+	<item value="177" key="passwordStores.location.x"/>
+	<section name="NewLocationWizard">
+		<list key="ConfigurationWizardMainPage.STORE_URL_ID">
+			<item value="http://cs431-29.rutgers.edu/repos/cs431-grp-3/"/>
+			<item value="http://cs431-29.rutgers.edu/"/>
+		</list>
+	</section>
+</section>

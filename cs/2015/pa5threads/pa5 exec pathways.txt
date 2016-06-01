@@ -1,0 +1,39 @@
+pa5
+
+
+if fork == 0
+	exec
+		read 1 (setup categories)
+			1 shm segment per category (order queuing)
+			setup segments and exit
+else if fork == 0
+	exec
+		read 2 (database - setup customers)
+			1 shm segment per customer (credit balance)
+			setup segments
+			load initial credit balances
+			needs to lock to prevent misuse
+				order attach
+				if free
+					switch free bit to lock
+					process order
+						if balance ok order processes
+						else order bounces
+					unlock
+				if not free
+					wait and try again
+
+else if fork == 0
+	exec
+		read 3 (order processing)
+			load order into a shared segment based on category
+			if required category is full, pause loading
+			<move to next category?>
+else
+	print report based on shared memory processing
+
+1) order loaded
+2) processing 2: wait for balance unlock
+3) lock and check and modify or reject balance / order
+4) unlock balance after either rejecting or processing to output file
+5) order memory is finished, new order can overwrite segment

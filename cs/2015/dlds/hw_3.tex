@@ -1,0 +1,235 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{latexsym}
+\usepackage{times}
+\usepackage{psfrag,epsfig,epsf}
+\usepackage{graphics}
+\usepackage{multirow}
+\usepackage{fullpage}
+\usepackage{verbatim}
+\usepackage{fancyheadings}
+\usepackage[T1]{fontenc}
+\usepackage{arev}
+\usepackage{subfigure}
+\usepackage{url}
+\usepackage[noline,noend,ruled,linesnumbered]{algorithm2e}
+\usepackage{algpseudocode}
+\linespread{1.02} 
+
+\pagestyle{empty}
+
+\addtolength{\topmargin}{-20pt}
+\addtolength{\oddsidemargin}{-5pt}
+\addtolength{\textwidth}{20pt}
+\addtolength{\textheight}{50pt}
+
+\newenvironment{myitem}{\begin{list}{$\bullet$}
+{\setlength{\itemsep}{-0pt}
+\setlength{\topsep}{0pt}
+\setlength{\labelwidth}{0pt}
+%\setlength{\labelsep}{0pt}
+\setlength{\leftmargin}{10pt}
+\setlength{\parsep}{-0pt}
+\setlength{\itemsep}{0pt}
+\setlength{\partopsep}{0pt}}}%
+{\end{list}}
+
+\begin{document}
+
+\sloppy
+
+\noindent \underline{CS 344: DESIGN AND ANALYSIS OF COMPUTER
+  ALGORITHMS \hspace{1.6in} SPRING 2014}
+
+\vspace{0.1in}
+
+\begin{center}
+{\bf {\large Homework 3}}\\
+Dynamic Programming and Graph Search\\
+\end{center}
+
+\vspace{0.1in}
+
+\noindent Deadline: April 4, 11:59pm.\\ 
+Available points: 110. Perfect score: 100.\\
+
+\begin{center}
+{\bf Homework Instructions:}
+\end{center}
+
+\noindent {\bf Teams:} Homeworks should be completed by teams of
+students - three at most. No additional credit will be given for
+students that complete a homework individually. Please inform
+Athanasios Krontiris {\bf if your team has changed from the previous
+  assignments.} (email: ak979 AT cs.rutgers.edu).\\
+
+\noindent {\bf Submission Rules:} Submit your solutions electronically
+as a PDF document through \url{sakai.rutgers.edu}. Do not submit Word
+documents, raw text, or hardcopies etc. Make sure to generate and
+submit a PDF instead. Each team of students should submit only a
+single copy of their solutions and indicate all team members on their
+submission.  Failure to follow these rules will result in lower grade
+in the assignment.\\
+
+\noindent {\bf Late Submissions:} No late submission is allowed. If
+you don't submit a homework on time, you get 0 points for that
+homework.\\
+
+\noindent {\bf Extra Credit for \LaTeX:} You will receive 10\% extra
+credit points if you submit your answers as a typeset PDF (using
+\LaTeX, in which case you should also submit electronically your
+source code). Resources on how to use \LaTeX\ are available on the
+course's website. There will be a 5\% bonus for electronically
+prepared answers (e.g., on MS Word, etc.) that are not typeset.\\
+
+\noindent {\bf 25\% Rule:} For any homework problem (same will hold
+for exam questions), you can either attempt to answer the question, in
+which case you will receive between 0 and 100\% credit for that
+question (i.e., you can get partial credit), or you can write "I don't
+know", in which case you receive 25\% credit for that question.
+Leaving the question blank is the same as writing "I don't know." You
+may get less than 25\% credit for a question that you answer
+erroneously.\\
+
+\noindent {\bf Handwritten Reports:} If you want to submit a
+handwritten report, scan it and submit a PDF via Sakai. We will not
+accept hardcopies. If you choose to submit handwritten answers and we
+are not able to read them, you will not be awarded any points for the
+part of the solution that is unreadable.\\
+
+\noindent {\bf Precision:} Try to be precise. Have in mind that you
+are trying to convince a very skeptical reader (and computer
+scientists are the worst kind...) that your answers are correct.\\
+
+\noindent {\bf Collusion, Plagiarism, etc.:} Each team of students
+must prepare its solutions independently from other teams, i.e.,
+without using common notes or worksheets with other students or trying
+to solve problems in collaboration with other teams.  You must
+indicate any external sources you have used in the preparation of your
+solution. Do not plagiarize online sources and in general make sure
+you do not violate any of the academic standards of the course, the
+department or of the university (the standards are available through
+the course's website). Failure to follow these rules may result in
+failure in the course.\\
+
+\newpage
+
+\vspace{0.1in}
+
+{\bf }
+
+\begin{center}
+{\bf Part A (35 points)}
+\end{center}
+
+\noindent {\bf Problem 1:} You are participating in the design of a
+new stepping stones challenge for the remake of the cult Japanese TV
+show ``Takeshi's Castle''.\\
+
+\noindent The challenge involves a team of two people tied with a rope
+that need to walk over a sequence of stepping stones. The first
+teammate is allowed to go over the stepping stones that are painted
+red $\{r_0, \ldots, r_n\}$, while the second teammate is allowed to go
+over the stepping stones that are painted blue $\{b_0, \ldots,
+b_m\}$. For the team to win, the two players have to walk over all the
+stepping stones in the corresponding sequence while they are connected
+with the rope. The teammates are not allowed to backtrack. At each
+point in time, either one of the players can jump from her current
+stone to the next one and the other one stays at his current stone, or
+both of them jump simultaneously from their current stones to the next
+ones. Such a jump is obviously feasible only if the distances between
+the two players before and after the jump are less than the length of
+the rope connecting them.\\
+
+\noindent The TV show producer has already built the two sequences of
+red and blue stepping stones. Given the coordinates of the stepping
+stones, your task is to select the minimum length of the rope for
+which it is possible for the two players to win the game. This is what
+will make the show entertaining for the audience!\\
+
+\noindent Provide an algorithm for this computation and argue its
+running time.
+
+
+\begin{center}
+{\bf Part B (35 points)}
+\end{center}
+
+\noindent {\bf Problem 2:}\\
+
+\noindent {\bf A.} You have a collection of $n$ distinct chopsticks of
+length $l_{1},\dots,l_{n}$. Any two of them can be paired for use if
+the length of them differ at most $k$. How can you easily pair as many
+of the chopsticks as possible? Describe a greedy algorithm of time
+complexity $O(n\log n)$ to solve this problem and prove the
+correctness of your algorithm.\\
+
+\noindent {\bf B.} Consider now a variant of the above problem. You
+can still only pair chopsticks that differ at most $k$ in length. But
+now a value $w_{i}$ is also associated with each individual
+chopstick. You want to maximize the sum of the values of the
+chopsticks that have been paired.\\
+
+\noindent For example, suppose you have 7 chopsticks of length
+$5,2,3,11,9,12,16$ and corresponding values $1,1,2,5,3,3,10$. You are
+allowed to pair chopsticks that differ by at most 3 units in
+length. Then one of the optimal solutions here is $\{ (2,3),(9,11) \}$
+of optimal value $1+2+3+5=11$.\\
+
+\noindent How can you pair the chopsticks so as to maximize the value?
+Describe a dynamic programming algorithm of time complexity $O(n^{2})$
+to solve this problem. Can you do better than $O(n^{2})$?\\
+
+\begin{center}
+{\bf Part C (20 points)}
+\end{center}
+
+
+\noindent {\bf Problem 3:} In the robotics lab the new robot has just
+arrived. The robot has the ability to construct a topological map of
+the environment, such as the graph shown in Figure
+\ref{fig:problem3}. The robot is allowed to move only forward along
+the directions of the edges on the topological map. Moreover, the
+graph is being constructed in such a way that will prevent the robot
+to execute loops, i.e., the robot is not able to visit a node that it
+has already visited.\\
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=4in]{figures/map}
+\caption{An example of a directed graph that the robot build for this map.}
+\label{fig:problem3}
+\end{figure}
+
+\noindent {\bf A.} Given a start location for your robot and a target
+location, provide an efficient algorithm that will return all the
+possible paths from the start to the target.  What is the running time
+for your algorithm?\\
+
+\noindent {\bf B.} You want to check if the topological map provides
+enough information for your robot to be able to visit all the rooms so
+as to clean them. Provide an efficient algorithm that will be able to
+check if there is a path for the robot on the graph that can visit all
+the rooms (i.e., nodes on the graph).\\
+
+\begin{center}
+{\bf Part D (20 points)}
+\end{center}
+
+\noindent {\bf Problem 4:} You are preparing a banquet where the
+guests are government officials from many different countries. In
+order to avoid unnecessary troubles, you are asked to check the list
+of international conflicts in the last ten years. Then, you will
+assign the guests to two tables, such that in each table, any two
+guests are not from countries that had conflicts in the last ten
+years.\\
+
+\noindent Provide an efficient algorithm that determines whether it is
+possible to make such an assignment. If it is possible to do so, the
+algorithm should return the assignment of these two tables. What is
+the running time?
+
+\end{document}
+

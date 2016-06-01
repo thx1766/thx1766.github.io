@@ -1,0 +1,70 @@
+(gdb) start
+
+Temporary breakpoint 1 at 0x8048417: file professor.c, line 42.
+Starting program: /.autofs/ilab/ilab_users/schaffna/os/undead/undead 
+
+Temporary breakpoint 1, main () at professor.c:42
+42		int r2 = 0;
+Missing separate debuginfos, use: debuginfo-install glibc-2.12-1.166.el6_7.1.i686
+
+(gdb) info frame
+Stack level 0, frame at 0xffffd250:
+ eip = 0x8048417 in main (professor.c:42); saved eip 0x147d36
+ source language c.
+ Arglist at 0xffffd248, args: 
+ Locals at 0xffffd248, Previous frame's sp is 0xffffd250
+ Saved registers:
+  ebp at 0xffffd248, eip at 0xffffd24c
+
+(gdb) step
+44		signal(SIGSEGV, segment_fault_handler);
+
+(gdb) info frame
+Stack level 0, frame at 0xffffd250:
+ eip = 0x804841f in main (professor.c:44); saved eip 0x147d36
+ source language c.
+ Arglist at 0xffffd248, args: 
+ Locals at 0xffffd248, Previous frame's sp is 0xffffd250
+ Saved registers:
+  ebp at 0xffffd248, eip at 0xffffd24c
+
+(gdb) step
+46		r2 = *( (int *) 0 );
+
+(gdb) info frame
+Stack level 0, frame at 0xffffd250:
+ eip = 0x8048433 in main (professor.c:46); saved eip 0x147d36
+ source language c.
+ Arglist at 0xffffd248, args: 
+ Locals at 0xffffd248, Previous frame's sp is 0xffffd250
+ Saved registers:
+  ebp at 0xffffd248, eip at 0xffffd24c
+
+(gdb) step
+
+Program received signal SIGSEGV, Segmentation fault.
+0x08048438 in main () at professor.c:46
+46		r2 = *( (int *) 0 );
+
+(gdb) info frame
+Stack level 0, frame at 0xffffd250:
+ eip = 0x8048438 in main (professor.c:46); saved eip 0x147d36
+ source language c.
+ Arglist at 0xffffd248, args: 
+ Locals at 0xffffd248, Previous frame's sp is 0xffffd250
+ Saved registers:
+  ebp at 0xffffd248, eip at 0xffffd24c
+
+(gdb) step
+segment_fault_handler (signum=11) at professor.c:16
+16	{
+
+(gdb) info frame
+Stack level 0, frame at 0xffffcb90:
+ eip = 0x80483f4 in segment_fault_handler (professor.c:16); saved eip 0x130400
+ called by frame at 0xffffd220
+ source language c.
+ Arglist at 0xffffcb88, args: signum=11
+ Locals at 0xffffcb88, Previous frame's sp is 0xffffcb90
+ Saved registers:
+  eip at 0xffffcb8c

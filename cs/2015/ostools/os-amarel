@@ -1,0 +1,5 @@
+#!/usr/bin/expect
+spawn ssh schaffna@amarel.cs.rutgers.edu
+expect "password:"
+send "nt116001nt\n";
+interact

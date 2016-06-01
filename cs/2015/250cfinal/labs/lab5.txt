@@ -1,0 +1,314 @@
+format compact
+[Warning: Function /.autofs/ilab/ilab_users/schaffna/250cfinal/randperm.m has the same name as a MATLAB builtin. We suggest
+you rename the function to avoid a potential name conflict.] 
+% Math 250 MATLAB Assignment 5
+eigshow
+% question 1 a
+% two positive, two negative, 1, -1, 1.25, -1.25
+% question 1 b
+% two positive, two negative, 1, -1, .75, -.75
+% the real eigenvalues correspond to 1 and -1, those less than zero are not real
+% question 2 a
+A = [1 3; 4 2]/4
+A =
+    0.2500    0.7500
+    1.0000    0.5000
+syms t; I = eye(2); p = det(A-t*I)
+p =
+t^2 - (3*t)/4 - 5/8
+syms t; I = eye(2); p = det(A - t*I)
+p =
+t^2 - (3*t)/4 - 5/8
+det(A)
+ans =
+   -0.6250
+p(t)
+{Error using <a href="matlab:helpUtils.errorDocCallback('sym/subsindex', '/.autofs/system/koko_system/matlab2013a/toolbox/symbolic/symbolic/@sym/sym.m', 1558)" style="font-weight:bold">sym/subsindex</a> (<a href="matlab: opentoline('/.autofs/system/koko_system/matlab2013a/toolbox/symbolic/symbolic/@sym/sym.m',1558,0)">line 1558</a>)
+Indexing input must be numeric, logical or ':'.
+Error in <a href="matlab:helpUtils.errorDocCallback('sym>privformat', '/.autofs/system/koko_system/matlab2013a/toolbox/symbolic/symbolic/@sym/sym.m', 2357)" style="font-weight:bold">sym>privformat</a> (<a href="matlab: opentoline('/.autofs/system/koko_system/matlab2013a/toolbox/symbolic/symbolic/@sym/sym.m',2357,0)">line 2357</a>)
+    x = subsindex(x)+1;
+Error in <a href="matlab:helpUtils.errorDocCallback('sym/subsref', '/.autofs/system/koko_system/matlab2013a/toolbox/symbolic/symbolic/@sym/sym.m', 1578)" style="font-weight:bold">sym/subsref</a> (<a href="matlab: opentoline('/.autofs/system/koko_system/matlab2013a/toolbox/symbolic/symbolic/@sym/sym.m',1578,0)">line 1578</a>)
+            [inds{k},refs{k}] = privformat(inds{k});} 
+.625^2-(3*.625)/4 - 5/8
+ans =
+   -0.7031
+solve(p)
+ans =
+  5/4
+ -1/2
+A = [3 1; -2 4]/4
+A =
+    0.7500    0.2500
+   -0.5000    1.0000
+solve(p)
+ans =
+  5/4
+ -1/2
+%question 3
+rand('seed', 1494)
+A = rmat(3,3), z = eig(A) - real(eig(A)
+ A = rmat(3,3), z = eig(A) - real(eig(A)
+                                        |
+{Error: Expression or statement is incorrect--possibly unbalanced (, {, or [.
+} 
+A = rmat(3,3), z = eig(A) - real(eig(A))
+A =
+     2     9     2
+     9     9     6
+     4     5     6
+z =
+     0
+     0
+     0
+syms t; I = eye(3); p = det(A - t*I)
+p =
+- t^3 + 17*t^2 + 35*t - 204
+figure; ezplot(p, [-10,10]), grid
+[P D] = eig(A)
+[Warning: Function /.autofs/ilab/ilab_users/schaffna/250cfinal/randperm.m has the same name as a MATLAB builtin. We suggest
+you rename the function to avoid a potential name conflict.] 
+P =
+   -0.4718   -0.8344   -0.4242
+   -0.7526    0.5480   -0.2300
+   -0.4593    0.0595    0.8759
+D =
+   18.3033         0         0
+         0   -4.0531         0
+         0         0    2.7499
+p1 = P(:,1), p2 = P(:,2), p3 = P(:,3)
+p1 =
+   -0.4718
+   -0.7526
+   -0.4593
+p2 =
+   -0.8344
+    0.5480
+    0.0595
+p3 =
+   -0.4242
+   -0.2300
+    0.8759
+A
+A =
+     2     9     2
+     9     9     6
+     4     5     6
+P*D*inv(p)
+ans =
+[ -2430787522441483/(281474976710656*(- t^3 + 17*t^2 + 35*t - 204)),   3807646906071655/(1125899906842624*(- t^3 + 17*t^2 + 35*t - 204)), -5253437504624297/(4503599627370496*(- t^3 + 17*t^2 + 35*t - 204))]
+[ -7755031770491953/(562949953421312*(- t^3 + 17*t^2 + 35*t - 204)),   -1250311761829137/(562949953421312*(- t^3 + 17*t^2 + 35*t - 204)), -5696314718678189/(9007199254740992*(- t^3 + 17*t^2 + 35*t - 204))]
+[ -2366093419513575/(281474976710656*(- t^3 + 17*t^2 + 35*t - 204)), -8681768541675403/(36028797018963968*(- t^3 + 17*t^2 + 35*t - 204)),  5423528468424009/(2251799813685248*(- t^3 + 17*t^2 + 35*t - 204))]
+p1 = P(:,1), p2 = P(:,2), p3 = P(:,3)
+p1 =
+   -0.4718
+   -0.7526
+   -0.4593
+p2 =
+   -0.8344
+    0.5480
+    0.0595
+p3 =
+   -0.4242
+   -0.2300
+    0.8759
+A*p1 - D(1,1)*p1, A*p2 - D(2,2)*p2, A*p3 - D(3,3)*p3
+ans =
+   1.0e-14 *
+   -0.1776
+   -0.5329
+   -0.1776
+ans =
+   1.0e-14 *
+   -0.3109
+   -0.4441
+   -0.1249
+ans =
+   1.0e-14 *
+   -0.1998
+   -0.0333
+   -0.1332
+P*D*inv(p)
+ans =
+[ -2430787522441483/(281474976710656*(- t^3 + 17*t^2 + 35*t - 204)),   3807646906071655/(1125899906842624*(- t^3 + 17*t^2 + 35*t - 204)), -5253437504624297/(4503599627370496*(- t^3 + 17*t^2 + 35*t - 204))]
+[ -7755031770491953/(562949953421312*(- t^3 + 17*t^2 + 35*t - 204)),   -1250311761829137/(562949953421312*(- t^3 + 17*t^2 + 35*t - 204)), -5696314718678189/(9007199254740992*(- t^3 + 17*t^2 + 35*t - 204))]
+[ -2366093419513575/(281474976710656*(- t^3 + 17*t^2 + 35*t - 204)), -8681768541675403/(36028797018963968*(- t^3 + 17*t^2 + 35*t - 204)),  5423528468424009/(2251799813685248*(- t^3 + 17*t^2 + 35*t - 204))]
+A
+A =
+     2     9     2
+     9     9     6
+     4     5     6
+A^5
+ans =
+      498255      713839      428674
+      796425     1137360      684324
+      485711      694149      417662
+A^10
+ans =
+   1.0e+12 *
+    1.0250    1.4651    0.8811
+    1.6350    2.3371    1.4055
+    0.9977    1.4261    0.8577
+P
+P =
+   -0.4718   -0.8344   -0.4242
+   -0.7526    0.5480   -0.2300
+   -0.4593    0.0595    0.8759
+P^-1
+ans =
+   -0.5148   -0.7359   -0.4426
+   -0.7977    0.6342   -0.2198
+   -0.2158   -0.4289    0.9246
+D^5
+ans =
+   1.0e+06 *
+    2.0542         0         0
+         0   -0.0011         0
+         0         0    0.0002
+D^10
+ans =
+   1.0e+12 *
+    4.2198         0         0
+         0    0.0000         0
+         0         0    0.0000
+% question 4
+A = eye(2); B = rand(2);
+A(:,1) = B(:,1)/sum(B(:,1)); A(:,2) = B(:,2)/sum(B(:,2))
+A =
+    0.7682    0.2914
+    0.2318    0.7086
+[1 1]*A
+ans =
+     1     1
+%b
+u = nulbasis(A - eye(2)), v = u/sum(u)
+u =
+    1.2569
+    1.0000
+v =
+    0.5569
+    0.4431
+A*v
+ans =
+    0.5569
+    0.4431
+V
+{Undefined function or variable 'V'.} 
+v
+v =
+    0.5569
+    0.4431
+figure; plot([0,v(1)], [0, v(2)]), hold on
+%c
+w = rand(2,1), p = w/sum(w)
+w =
+    0.4463
+    0.6011
+p =
+    0.4261
+    0.5739
+p = A*p, plot([0, p(1)], [0, p(2)], ':'), hold on
+p =
+    0.4945
+    0.5055
+p = A^2*p, plot([0, p(1)], [0, p(2)], ':'), hold on
+p =
+    0.5427
+    0.4573
+p = A^3*p, plot([0, p(1)], [0, p(2)], ':'), hold on
+p =
+    0.5554
+    0.4446
+p = A^4*p, plot([0, p(1)], [0, p(2)], ':'), hold on
+p =
+    0.5568
+    0.4432
+% question 5
+[Warning: Function /.autofs/ilab/ilab_users/schaffna/250cfinal/randperm.m has the same name as a MATLAB builtin. We suggest
+you rename the function to avoid a potential name conflict.] 
+A = [.8 .2 .1; .1 .7 .3; .1 .1 .6]
+A =
+    0.8000    0.2000    0.1000
+    0.1000    0.7000    0.3000
+    0.1000    0.1000    0.6000
+1 = city
+ 1 = city
+   |
+{Error: The expression to the left of the equals sign is not a valid target for an assignment.
+} 
+city = 1
+city =
+     1
+suburbs = 2
+suburbs =
+     2
+country = 3
+country =
+     3
+u = [1 1 1]
+u =
+     1     1     1
+u*A
+ans =
+    1.0000    1.0000    1.0000
+u
+u =
+     1     1     1
+p = [.7 .2 .1]
+p =
+    0.7000    0.2000    0.1000
+u*p
+{Error using <a href="matlab:helpUtils.errorDocCallback('mtimes')" style="font-weight:bold"> * </a>
+Inner matrix dimensions must agree.} 
+p = [.7; .2; .1]
+p =
+    0.7000
+    0.2000
+    0.1000
+u*p
+ans =
+    1.0000
+A*p
+ans =
+    0.6100
+    0.2400
+    0.1500
+A^2*p
+ans =
+    0.5510
+    0.2740
+    0.1750
+A^3*p
+ans =
+    0.5131
+    0.2994
+    0.1875
+A^5*p
+ans =
+    0.4741
+    0.3290
+    0.1969
+A^8*p
+ans =
+    0.4555
+    0.3449
+    0.1996
+u = nulbasis(A - eye(3)), v=u/sum(u)
+u =
+    2.2500
+    1.7500
+    1.0000
+v =
+    0.4500
+    0.3500
+    0.2000
+A*v
+ans =
+    0.4500
+    0.3500
+    0.2000
+v
+v =
+    0.4500
+    0.3500
+    0.2000
+diary off

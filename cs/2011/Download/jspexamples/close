@@ -1,0 +1,8 @@
+</body>
+</html>
+<%
+	// close everything
+	if (rs != null) rs.close();
+	st.close();
+	cn.close();
+%>

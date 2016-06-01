@@ -1,0 +1,18 @@
+<list> another
+inputDir/input5 1 
+</list>
+<list> cases
+inputDir/input4 1 
+</list>
+<list> funny
+inputDir/input2 3 inputDir/input1 1 
+</list>
+<list> hello
+inputDir/input1 1 inputDir/input2 1 inputDir/input3 1 inputDir/input4 1 inputDir/input5 1 
+</list>
+<list> kitty
+inputDir/input1 1 inputDir/input4 1 
+</list>
+<list> more
+inputDir/input4 1 
+</list>

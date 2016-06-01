@@ -1,0 +1,6 @@
+AuthUserFile /empyrean/u2/schaffna/.htpasswd
+AuthGroupFile /dev/null
+AuthName EnterPassword
+AuthType Basic
+
+require user wsabstract

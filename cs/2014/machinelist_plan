@@ -1,0 +1,26 @@
+plan for machinelist:
+
+start a server that waits for a connection from a controlling node
+
+control code to search and boot into other machines (based on universal list of machines)
+
+sleeper_app: waits for a connection on a port
+after a connection is established, commands can be sent to the remote machine
+	fork processes
+	start threads
+	etc...
+
+send it information to build executables, run makefiles, etc
+
+(sleeper - gets connection - switches into a processing mode)
+
+first stage would just be an application that waits for a connection
+then a control system
+
+something like a configuration management system and a single application with the resources of many machines
+
+possible uses:
+	mining wikipedia
+	mass translation of pages into multiple languages
+	think of the machines as running concurrent threads
+	base execution on how many other users are logged into the machine

@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# Remove files and dirs that we own
+while true; do read R || break; rm -rf -- "$R"; done \
+<<::://E//O//F////O//N//E//:::
+/ilab/users/schaffna/share/racket/doc/README
+/ilab/users/schaffna/man/man1/tex2page.1
+/ilab/users/schaffna/man/man1/setup-plt.1
+/ilab/users/schaffna/man/man1/raco.1
+/ilab/users/schaffna/man/man1/racket.1
+/ilab/users/schaffna/man/man1/plt-help.1
+/ilab/users/schaffna/man/man1/mzscheme.1
+/ilab/users/schaffna/man/man1/mzc.1
+/ilab/users/schaffna/man/man1/mred.1
+/ilab/users/schaffna/man/man1/gracket.1
+/ilab/users/schaffna/man/man1/drracket.1
+/ilab/users/schaffna/lib/racket/starter
+/ilab/users/schaffna/lib/racket/mzdyn3m.o
+/ilab/users/schaffna/lib/racket/libplplot.so
+/ilab/users/schaffna/lib/racket/libfit.so
+/ilab/users/schaffna/lib/racket/buildinfo
+/ilab/users/schaffna/include/racket
+/ilab/users/schaffna/share/racket/doc
+/ilab/users/schaffna/lib/racket/collects
+/ilab/users/schaffna/bin/tex2page
+/ilab/users/schaffna/bin/swindle
+/ilab/users/schaffna/bin/slideshow
+/ilab/users/schaffna/bin/slatex
+/ilab/users/schaffna/bin/setup-plt
+/ilab/users/schaffna/bin/scribble
+/ilab/users/schaffna/bin/raco
+/ilab/users/schaffna/bin/racket
+/ilab/users/schaffna/bin/plt-web-server
+/ilab/users/schaffna/bin/plt-r6rs
+/ilab/users/schaffna/bin/plt-r5rs
+/ilab/users/schaffna/bin/plt-help
+/ilab/users/schaffna/bin/plt-games
+/ilab/users/schaffna/bin/planet
+/ilab/users/schaffna/bin/pdf-slatex
+/ilab/users/schaffna/bin/mztext
+/ilab/users/schaffna/bin/mzscheme
+/ilab/users/schaffna/bin/mzpp
+/ilab/users/schaffna/bin/mzc
+/ilab/users/schaffna/bin/mred-text
+/ilab/users/schaffna/bin/mred
+/ilab/users/schaffna/bin/gracket-text
+/ilab/users/schaffna/bin/gracket
+/ilab/users/schaffna/bin/drracket
+::://E//O//F////O//N//E//:::
+
+# Remove dirs that we created but not own only if empty
+while true; do read R || break; rmdir -- "$R" > /dev/null 2>&1; done \
+<<::://E//O//F////T//W//O//:::
+/ilab/users/schaffna/man/man1
+/ilab/users/schaffna/man
+/ilab/users/schaffna/include/
+/ilab/users/schaffna/share/racket/
+/ilab/users/schaffna/share/
+/ilab/users/schaffna/lib/racket/
+/ilab/users/schaffna/lib/
+/ilab/users/schaffna/bin
+::://E//O//F////T//W//O//:::
+
+# Remove this script
+exec rm "$0"

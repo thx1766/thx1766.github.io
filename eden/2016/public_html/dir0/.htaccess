@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Restricted files"
+AuthUserFile /eden-vf/u2/schaffna/public_html/.pw
+require user share

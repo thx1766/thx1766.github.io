@@ -1,0 +1,3 @@
+Testplan:
+
+Makefile contains rules "buildtest1" and "buildtest2", with instructions and infrmation as rules "test1" and "test2", with corresponding "cleantest1" and "cleantest2" rules for cleaning up generated output.

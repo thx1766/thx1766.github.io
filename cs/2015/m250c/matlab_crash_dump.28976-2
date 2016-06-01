@@ -1,0 +1,87 @@
+
+------------------------------------------------------------------------
+       Segmentation violation detected at Fri Jan 31 23:35:04 2014
+------------------------------------------------------------------------
+
+Configuration:
+  Crash Decoding     : Disabled
+  Current Visual     : 0x21 (class 4, depth 24)
+  Default Encoding   : UTF-8
+  GNU C Library      : 2.12 stable
+  MATLAB Architecture: glnxa64
+  MATLAB Root        : /.autofs/system/koko_system/matlab2013a
+  MATLAB Version     : 8.1.0.604 (R2013a)
+  Operating System   : Linux 2.6.32-358.14.1.el6.x86_64 #1 SMP Tue Jul 16 23:51:20 UTC 2013 x86_64
+  Processor ID       : x86 Family 6 Model 45 Stepping 7, GenuineIntel
+  Virtual Machine    : Java 1.6.0_17-b04 with Sun Microsystems Inc. Java HotSpot(TM) 64-Bit Server VM mixed mode
+  Window System      : CentOS (11300000), display :20.0
+
+Fault Count: 2
+
+
+Abnormal termination:
+Segmentation violation
+
+Register State (from fault):
+  RAX = 00007fbf88000077  RBX = 00007fbf8a66b540
+  RCX = 001077b08a66c430  RDX = 000ff7f100000f00
+  RSP = 00007fbf2fcde6d0  RBP = 0000000000000001
+  RSI = 0000000000000000  RDI = 0000000000000000
+
+   R8 = 00007fbf20000088   R9 = 0000000000000001
+  R10 = 0000000000000140  R11 = 0000000000000000
+  R12 = 00007fbf20009910  R13 = 00007fbf20009910
+  R14 = 0000000000000000  R15 = 00007fbef9c87220
+
+  RIP = 00007fbfae995d75  EFL = 0000000000010206
+
+   CS = 0033   FS = 0000   GS = 0000
+
+Stack Trace (from fault):
+[  0] 0x00007fbfae995d75                                   /lib64/libc.so.6+00220533 exit+00000053
+[  1] 0x00007fbfa0cc6988                             /usr/lib64/libX11.so.6+00280968 _XIOError+00000088
+[  2] 0x00007fbfa0cc5369                             /usr/lib64/libX11.so.6+00275305 _XReply+00001081
+[  3] 0x00007fbfa0cc0c5d                             /usr/lib64/libX11.so.6+00257117 XSync+00000061
+[  4] 0x00007fbfa0ca16b0                             /usr/lib64/libX11.so.6+00128688 XCloseDisplay+00000128
+[  5] 0x00007fbfa8dc13a3 /.autofs/system/koko_system/matlab2013a/bin/glnxa64/libmwnativedisplay.so+00017315
+[  6] 0x00007fbfae995e22                                   /lib64/libc.so.6+00220706 exit+00000226
+[  7] 0x00007fbfa0cc6988                             /usr/lib64/libX11.so.6+00280968 _XIOError+00000088
+[  8] 0x00007fbfa0cc581d                             /usr/lib64/libX11.so.6+00276509 _XEventsQueued+00000125
+[  9] 0x00007fbfa0cb637f                             /usr/lib64/libX11.so.6+00213887 XEventsQueued+00000111
+[ 10] 0x00007fbf6c6ef69e /.autofs/system/koko_system/matlab2013a/sys/java/jre/glnxa64/jre/lib/amd64/xawt/libmawt.so+00063134 Java_sun_awt_X11_XlibWrapper_XEventsQueued+00000014
+[ 11] 0x00007fbf81346156                                   <unknown-module>+00000000
+[ 12] 0x00007fbf813c9404                                   <unknown-module>+00000000
+
+
+Abnormal termination:
+Segmentation violation
+
+Register State (from fault):
+  RAX = 007a006900530072  RBX = 00007fbeff7d9a20
+  RCX = 0000000000000000  RDX = 00007fbeff7d9b20
+  RSP = 00007fbf2ebccf70  RBP = 00007fbf2ebcd070
+  RSI = 00007fbf969b8d73  RDI = 00007fbf2ebccf20
+
+   R8 = 00007fbf969ca820   R9 = 0000000000000ffc
+  R10 = 00007fbf969ca828  R11 = 00007fbf969ce538
+  R12 = 00007fbf1c000e28  R13 = 007a006900530072
+  R14 = 00007fbf2ebcd1d0  R15 = 00007fbf2ebcd190
+
+  RIP = 00007fbfb0df3951  EFL = 0000000000010206
+
+   CS = 0033   FS = 0000   GS = 0000
+
+Stack Trace (from fault):
+[  0] 0x00007fbfb0df3951 /.autofs/system/koko_system/matlab2013a/bin/glnxa64/libmwjmi.so+00637265 _ZN3jmi9constructEP7JNIEnv_RSt3setIPNS_8ConsInfoESt4lessIS4_ESaIS4_EES4_z+00000209
+[  1] 0x00007fbeff5c6f62 /.autofs/system/koko_system/matlab2013a/bin/glnxa64/libnativesettings.so+00311138 _ZN14nativesettings19getJavaValueFromKeyEP7JNIEnv_RKN5boost3anyE+00000098
+[  2] 0x00007fbeff5b5714 /.autofs/system/koko_system/matlab2013a/bin/glnxa64/libnativesettings.so+00239380 _ZN14nativesettings9nativeGetEP7JNIEnv_P7_jclasslP13_jobjectArrayP8_jstringS7_+00000228
+[  3] 0x00007fbf8139259f                                   <unknown-module>+00000000
+[  4] 0x00007fbf8136cf44                                   <unknown-module>+00000000
+
+
+If this problem is reproducible, please submit a Service Request via:
+    http://www.mathworks.com/support/contact_us/
+
+A technical support engineer might contact you with further information.
+
+Thank you for your help.

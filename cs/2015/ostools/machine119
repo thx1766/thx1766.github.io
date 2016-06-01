@@ -1,0 +1,5 @@
+#!/usr/bin/expect
+spawn ssh user@172.16.97.119
+expect "Password:"
+send "group119\n";
+interact

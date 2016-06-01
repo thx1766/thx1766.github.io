@@ -1,0 +1,33 @@
+//Test Cases 
+
+Input: "\"?\n\t\v\n\r\f\a\\", "what am I doing?"
+Expected Output: "what", "am", "I", and "doing"
+
+Input: "\t\v\b\n/?", "/NOMOREERROR/S/?/n/sssss"
+Expected Output: "NOMOREEERROR", "S", "n" and "sssss"
+
+Input: "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\", "\\\\\\\\\\"
+Expected Output: ""
+
+Input: "\'?","\\'a'?ab\t\v\b"
+Expected Output:"a", "ab","t","v", and "b"
+
+Input: "", "no more'''''\n"
+Expected Output:"no", "more", and "n"
+
+Input: "???????\\\\n\\\\\\\\\\\\?\\\\\\\\\\\\\\\000", "O/ctal"
+Expected Output: "O" and "ctal" 
+
+Input:"\xhh\'\f\?\"\'","b?ac?kereknreisreriuesruneruesuresubrereureureurbeurbeu"
+Expected Output: "b", "ac", and "kereknreisreriuesruneruesuresubrereureureurbeurbeu"
+
+Input:"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\\n\\n\n\n\n\n\n", "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\n\n\n\n\\n\n\n\n\a"
+Expected Output:"a"
+
+Input:"", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" 
+Expected Output: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" 
+
+Input:"/?/?/?/?/%/r/f/a/'/r/a/f/?/r/?", "\a\a\a\a\a\a\a\hello who's there?" 
+Expected Output: "a", "a","a","a","a","a","a","a", "hello", "who", "s", and "there" 
+
+

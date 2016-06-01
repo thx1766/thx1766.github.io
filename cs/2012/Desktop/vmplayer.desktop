@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=VMPlayer
+Type=Application
+Terminal=false
+Exec=/usr/bin/vmplayer
+Comment=optional
+Icon=/usr/local/share/desktop-icons/etc/images/vmware_icon.png

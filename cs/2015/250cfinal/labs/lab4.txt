@@ -1,0 +1,422 @@
+% Math 250 MATLAB Assignment #4
+[Warning: Function /.autofs/ilab/ilab_users/schaffna/250cfinal/randperm.m has the same name as a MATLAB builtin. We suggest
+you rename the function to avoid a potential name conflict.] 
+rand('seed', 1494)
+format compact
+A = rmat(3,2)
+A =
+     2     9
+     9     9
+     4     5
+rank(A)
+ans =
+     2
+% Question 1 (a)
+u = A(:,1), v = A(:,2)
+u =
+     2
+     9
+     4
+v =
+     9
+     9
+     5
+[s, t] = meshgrid((-1:0.1:1));
+X = s*u(1)+t*v(1); Y = s*u(2)+t*v(2); Z = s*u(3)+t*v(3);
+surf(X, Y, Z); axis square; colormap hot; hold on
+b = rvect(3)
+b =
+     2
+     6
+     6
+r = -1:0.05:1;
+plot3(r*b(1),r*b(2),r*b(3), '+')
+u = A(:,1), v = A(:,2)
+u =
+     2
+     9
+     4
+v =
+     9
+     9
+     5
+[s, t] = meshgrid((-1:0.1:1));
+X = s*u(1)+t*v(1); Y = s*u(2)+t*v(2); Z = s*u(3)+t*v(3);
+surf(X, Y, Z); axis square; colormap hot; hold on
+b = rvect(3)
+b =
+     2
+     0
+     2
+r = -1:0.05:1;
+plot3(r*b(1),r*b(2),r*b(3), '+')
+A = rmat(3,2)
+A =
+     5     2
+     4     3
+     6     4
+u = A(:,1), v = A(:,2)
+u =
+     5
+     4
+     6
+v =
+     2
+     3
+     4
+[s, t] = meshgrid((-1:0.1:1));
+X = s*u(1)+t*v(1); Y = s*u(2)+t*v(2); Z = s*u(3)+t*v(3);
+surf(X, Y, Z); axis square; colormap hot; hold on
+b = rvect(3)
+b =
+     9
+     8
+     0
+r = -1:0.05:1;
+plot3(r*b(1),r*b(2),r*b(3), '+')
+% Question 1 (c)
+[Warning: Function /.autofs/ilab/ilab_users/schaffna/250cfinal/randperm.m has the same name as a MATLAB builtin. We suggest
+you rename the function to avoid a potential name conflict.] 
+% can not find in R^2, as there is one intersection at point 0
+% (every subspace contains 0)
+% Question 1 (d)
+z = rand(2,1), c = A*z
+z =
+    0.6970
+    0.8598
+c =
+    5.2047
+    5.3675
+    7.6213
+figure, surf(X, Y, Z); axis square; colormap hot, hold on
+plot3(r*c(1), r*c(2), r*c(3), '+')
+% question 2(a)
+[Warning: Function /.autofs/ilab/ilab_users/schaffna/250cfinal/randperm.m has the same name as a MATLAB builtin. We suggest
+you rename the function to avoid a potential name conflict.] 
+B = rmat(3,3), rank(b)
+B =
+     6     5     8
+     6     2     2
+     7     1     6
+ans =
+     1
+B = rmat(3,3), rank(B)
+B =
+     3     4     3
+     7     1     6
+     4     7     9
+ans =
+     3
+A = [B(:,1), B(:,2), 2*B(:,1)+3*B(:,2), 4*B(:,1) -5*B(:,2), B(:,3)], R = rref(A)
+A =
+     3     4    18    12   -20     3
+     7     1    17    28    -5     6
+     4     7    29    16   -35     9
+R =
+     1     0     2     4     0     0
+     0     1     3     0    -5     0
+     0     0     0     0     0     1
+% columns 1 and 2 have 1 and no other entries, and row 5 only has -5
+% column corespondance: Let A be a matrix and R its reduced row echelon form.
+% if column j of R is a linear combination of other columns of R, then column j of A is a linear combination of the corresponding columns of A using the same coefficients, and vice versa
+% column #3 of R is [2;3;0] and column #4 is [4;0;0] because column 3 of A is a linear combination of A's columns 1 and 2 in the ratios 2 and 3
+% and column 4 of A is a linear combination of column 1 and coefficent multiplier 4
+% question 2 (b)
+% free variables: x_2, x_3, x_5
+dim(V)
+{Undefined function or variable 'V'.} 
+% dim(V) = 3
+% question 2 (C)
+N = nulbasis(A)
+N =
+    -2    -4     0
+    -3     0     5
+     1     0     0
+     0     1     0
+     0     0     1
+     0     0     0
+v1 = N(:, 1), v2 = N(:,2)
+v1 =
+    -2
+    -3
+     1
+     0
+     0
+     0
+v2 =
+    -4
+     0
+     0
+     1
+     0
+     0
+A = [B(:,1), B(:,2), 2*B(:,1)+3*B(:,2), 4*B(:,1) - 5*B(:,2), B(:,3)], R = rref(A)
+A =
+     3     4    18    -8     3
+     7     1    17    23     6
+     4     7    29   -19     9
+R =
+     1     0     2     4     0
+     0     1     3    -5     0
+     0     0     0     0     1
+N = nulbasis(A)
+N =
+    -2    -4
+    -3     5
+     1     0
+     0     1
+     0     0
+v1 = N(:, 1), v2 = N(:,2)
+v1 =
+    -2
+    -3
+     1
+     0
+     0
+v2 =
+    -4
+     5
+     0
+     1
+     0
+% free variables: x_3, x_4
+% columns 1 and 2 have 1 and no other entries, or 5
+% components 3 are 1, 4 and 5 are 0 in v1, and in v2 component 4 is 1 and 3 and 5 are 0
+null(A)
+ans =
+    0.1256   -0.9588
+    0.9682    0.1539
+   -0.2046    0.1899
+    0.0709    0.1447
+    0.0000    0.0000
+s = rand(1), t = rand(1), x = s*v1 + s*v2
+s =
+    0.8426
+t =
+    0.4057
+x =
+   -5.0559
+    1.6853
+    0.8426
+    0.8426
+         0
+% question 3 a
+A = rmat(5,3), R = rref(A)
+A =
+     4     6     2
+     4     8     7
+     7     6     5
+     4     6     4
+     5     2     7
+R =
+     1     0     0
+     0     1     0
+     0     0     1
+     0     0     0
+     0     0     0
+rank(A)
+ans =
+     3
+% no solution because system is inconsistent
+b = rmat(5,1), xp = partic(A, b)
+b =
+     0
+     7
+     5
+     1
+     9
+xp =
+     []
+b = rand(1)*A(:,1)+rand(1)*A(:,2)+rand(1)*A(:,3)
+b =
+    6.8634
+   10.8155
+    9.5496
+    7.8722
+    6.9160
+xp = partic(A, b)
+xp =
+    0.3910
+    0.7151
+    0.5044
+b
+b =
+    6.8634
+   10.8155
+    9.5496
+    7.8722
+    6.9160
+A*xp
+ans =
+    6.8634
+   10.8155
+    9.5496
+    7.8722
+    6.9160
+% b is a linear combination of the columns of A, so we are guaranteed a solution
+% question 3 b
+A = rmat(3,5), R = rref(A)
+A =
+     3     7     2     8     4
+     8     2     1     0     0
+     7     8     6     1     8
+R =
+    1.0000         0         0   -0.2000   -0.2286
+         0    1.0000         0    1.8000    0.3429
+         0         0    1.0000   -2.0000    1.1429
+rank(A)
+ans =
+     3
+% A is overdetermined, meaning that at least two columns correspond to free variables, meaning that there is at least one solution
+b = rmat(3,1)
+b =
+     2
+     0
+     2
+xp = partic(A, b)
+xp =
+   -0.0800
+    0.3200
+         0
+         0
+         0
+% the entries of row 4 and 5 of the particular solution are zero because those correspond to x_4 and x_5, set to zero as free variables
+b
+b =
+     2
+     0
+     2
+A*xp
+ans =
+     2
+     0
+     2
+% question 4 a
+N = nullbasis(A)
+{Undefined function 'nullbasis' for input arguments of type 'double'.} 
+N = nullbasis(A)
+{Undefined function 'nullbasis' for input arguments of type 'double'.} 
+N = nulbasis(A)
+N =
+    0.2000    0.2286
+   -1.8000   -0.3429
+    2.0000   -1.1429
+    1.0000         0
+         0    1.0000
+v1 = N(:,1), v2 = N(:,2)
+v1 =
+    0.2000
+   -1.8000
+    2.0000
+    1.0000
+         0
+v2 =
+    0.2286
+   -0.3429
+   -1.1429
+         0
+    1.0000
+x = xp + rand(1)*v1 + rand(1)*v2
+x =
+    0.1341
+   -0.5651
+    0.0572
+    0.3760
+    0.6079
+A*x
+ans =
+    2.0000
+    0.0000
+    2.0000
+b
+b =
+     2
+     0
+     2
+% question 4 b
+x = xp + 8*v1 + 4*v2
+x =
+    2.4343
+  -15.4514
+   11.4286
+    8.0000
+    4.0000
+b
+b =
+     2
+     0
+     2
+A*x
+ans =
+    2.0000
+   -0.0000
+    2.0000
+% question 5 a
+A = [.3 0; .14 0; .56 1]
+A =
+    0.3000         0
+    0.1400         0
+    0.5600    1.0000
+B = [.5 0 0; .5 1 .6; 0 0 .4]
+B =
+    0.5000         0         0
+    0.5000    1.0000    0.6000
+         0         0    0.4000
+C = [1 .3 0; 0 .2 0; 0 .35 .7; 0 .15 .3]
+C =
+    1.0000    0.3000         0
+         0    0.2000         0
+         0    0.3500    0.7000
+         0    0.1500    0.3000
+M = C*B*A
+M =
+    0.3378    0.1800
+    0.1252    0.1200
+    0.3759    0.4900
+    0.1611    0.2100
+x = 1000*rvect(2), y = A*x, z = B*y, w = C*z
+x =
+        3000
+        4000
+y =
+   1.0e+03 *
+    0.9000
+    0.4200
+    5.6800
+z =
+         450
+        4278
+        2272
+w =
+   1.0e+03 *
+    1.7334
+    0.8556
+    3.0877
+    1.3233
+[ 1 1 ]*x
+ans =
+        7000
+[1 1 1]*y
+ans =
+        7000
+[1 1 1 1]*w
+ans =
+        7000
+y = [270 126 704]'
+y =
+   270
+   126
+   704
+w = [100 200 300 400]'
+w =
+   100
+   200
+   300
+   400
+rref([M w])
+ans =
+     1     0     0
+     0     1     0
+     0     0     1
+     0     0     0
+diary off

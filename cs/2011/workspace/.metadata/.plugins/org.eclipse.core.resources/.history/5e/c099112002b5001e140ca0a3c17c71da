@@ -1,0 +1,14 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class testprogram extends JPanel{
+	
+	JButton okButton;
+	JButton quitButton;
+	GridLayout gl = new GridLayout(1,1,1,1);
+	setLayout(gl);
+	add(okButton);
+	add(quitButton);
+
+}

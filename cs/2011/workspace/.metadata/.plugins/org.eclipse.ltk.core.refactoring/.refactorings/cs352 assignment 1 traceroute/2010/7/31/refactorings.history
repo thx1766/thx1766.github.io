@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;returndata&apos; in &apos;traceroutestandard.traceroute.makeipheader(...)&apos; to &apos;rd&apos;&#x0A;- Original project: &apos;cs352 assignment 1 traceroute&apos;&#x0A;- Original element: &apos;traceroutestandard.traceroute.makeipheader(int, int, int).returndata&apos;&#x0A;- Renamed element: &apos;returndata&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;returndata&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;traceroutestandard{traceroute.java[traceroute~makeipheader~I~I~I@returndata!2591!2627!2600!2609!QIPheader;" name="rd" references="true" stamp="1280160824094" version="1.0"/>
+</session>

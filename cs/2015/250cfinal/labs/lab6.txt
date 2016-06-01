@@ -1,0 +1,361 @@
+format compact
+[Warning: Function /.autofs/ilab/ilab_users/schaffna/250cfinal/randperm.m has the same name as a MATLAB builtin. We suggest
+you rename the function to avoid a potential name conflict.] 
+% Math 250 MATLAB Lab Assignment 6
+rand('seed', 1494)
+% question 1
+u = rvect(2), v = rvect(2)
+u =
+     2
+     9
+v =
+     4
+     9
+rank([u,v])
+ans =
+     2
+% triangle inequality: for any vectors u and v in R^n, we have ||u+v||<=||u||+||v||
+norm(u), norm(v), norm(u+v)
+ans =
+    9.2195
+ans =
+    9.8489
+ans =
+   18.9737
+norm(u) +norm(v), norm(u+v)
+ans =
+   19.0684
+ans =
+   18.9737
+% cauchy-schwarz inequality: for any vectors u and v in R^n, we have |u dot v|<=||u|| dot ||v||
+abs(u'*v), norm(u)'*norm(v)
+ans =
+    89
+ans =
+   90.8020
+w = ((u'*v)/(v'*v))*v
+w =
+    3.6701
+    8.2577
+z = u-w
+z =
+   -1.6701
+    0.7423
+u'*w
+ans =
+   81.6598
+w'*u
+ans =
+   81.6598
+u
+u =
+     2
+     9
+w
+w =
+    3.6701
+    8.2577
+z
+z =
+   -1.6701
+    0.7423
+v
+v =
+     4
+     9
+z'*v
+ans =
+   8.8818e-15
+%very small is zero
+P = v*inv(v'*v)*v'
+P =
+    0.1649    0.3711
+    0.3711    0.8351
+P*u
+ans =
+    3.6701
+    8.2577
+w
+w =
+    3.6701
+    8.2577
+% question 2
+u1 = rvect(3), u2 = rvect(3), u3 = rvect(3)
+u1 =
+     9
+     5
+     2
+u2 =
+     6
+     6
+     2
+u3 =
+     0
+     2
+     5
+rank([u1, u2, u3])
+ans =
+     3
+r = 0:.05:1; hold on
+plot3(r*u1(1),r*u1(2),r*u1(3), 'r:')
+plot3(r*u2(1),r*u2(2),r*u2(3), 'r:')
+plot3(r*u3(1),r*u3(2),r*u3(3), 'r:')
+plot3(r*u2(1),r*u2(2),r*u2(3), 'g:')
+plot3(r*u3(1),r*u3(2),r*u3(3), 'b:')
+% vectors are mutually orthogonal
+v1=u1
+v1 =
+     9
+     5
+     2
+P1 = v1*inv(v1'*v1)*v1', v2 = u2 - P1*u2
+P1 =
+    0.7364    0.4091    0.1636
+    0.4091    0.2273    0.0909
+    0.1636    0.0909    0.0364
+v2 =
+   -1.2000
+    2.0000
+    0.4000
+v1'*v2
+ans =
+   6.2172e-15
+%very small is zero
+plot3(r*v2(1), r*v2(2), r*v2(3), 'g-.')
+P2 = v2*inv(v2'*v2)*v2', v3 = u3 - P1*u3 - P2*u3
+P2 =
+    0.2571   -0.4286   -0.0857
+   -0.4286    0.7143    0.1429
+   -0.0857    0.1429    0.0286
+v3 =
+   -0.3506
+   -1.0519
+    4.2078
+plot3(r*v3(1), r*v3(2), r*v3(3), 'b-.')
+w1 = v1/norm(v1), w2 = v2/norm(v2), w3 = v3/norm(v3)
+[Warning: Function /.autofs/ilab/ilab_users/schaffna/250cfinal/randperm.m has the same name as a MATLAB builtin. We suggest
+you rename the function to avoid a potential name conflict.] 
+w1 =
+    0.8581
+    0.4767
+    0.1907
+w2 =
+   -0.5071
+    0.8452
+    0.1690
+w3 =
+   -0.0806
+   -0.2417
+    0.9670
+Q = [w1, w2, w3]
+Q =
+    0.8581   -0.5071   -0.0806
+    0.4767    0.8452   -0.2417
+    0.1907    0.1690    0.9670
+Q'*Q
+ans =
+    1.0000    0.0000   -0.0000
+    0.0000    1.0000   -0.0000
+   -0.0000   -0.0000    1.0000
+inv(Q)
+ans =
+    0.8581    0.4767    0.1907
+   -0.5071    0.8452    0.1690
+   -0.0806   -0.2417    0.9670
+A = [u1, u2, u3], R = Q'*A
+A =
+     9     6     0
+     5     6     2
+     2     2     5
+R =
+   10.4881    8.3905    1.9069
+    0.0000    2.3664    2.5355
+   -0.0000   -0.0000    4.3514
+A
+A =
+     9     6     0
+     5     6     2
+     2     2     5
+Q*R
+ans =
+    9.0000    6.0000    0.0000
+    5.0000    6.0000    2.0000
+    2.0000    2.0000    5.0000
+% question 3
+a1 = rvect(5); a2 = rvect(5); a3 = rvect(5); A = [a1, a2, a3]
+A =
+     4     9     6
+     6     8     6
+     2     0     7
+     3     6     5
+     4     8     2
+rank(A)
+ans =
+     3
+W = col(A)
+{Undefined function 'col' for input arguments of type 'double'.} 
+Q = grams(A); w1 = Q(:,1), w2 = Q(:, 2), w3 = Q(:,3)
+w1 =
+    0.4444
+    0.6667
+    0.2222
+    0.3333
+    0.4444
+w2 =
+    0.4934
+   -0.3988
+   -0.6851
+    0.2147
+    0.2863
+w3 =
+    0.4765
+   -0.4249
+    0.5440
+    0.3764
+   -0.3934
+Q'*Q
+ans =
+    1.0000    0.0000    0.0000
+    0.0000    1.0000   -0.0000
+    0.0000   -0.0000    1.0000
+P = w1*w1' + w2*w2' + w3*w3'
+P =
+    0.6680   -0.1029    0.0199    0.4334    0.1513
+   -0.1029    0.7840    0.1902   -0.0233    0.3493
+    0.0199    0.1902    0.8148    0.1317   -0.3114
+    0.4334   -0.0233    0.1317    0.2989    0.0616
+    0.1513    0.3493   -0.3114    0.0616    0.4343
+v = rvect(5)
+v =
+     1
+     8
+     2
+     6
+     3
+w = P*v, z = v - w
+w =
+    2.9390
+    7.4576
+    3.0271
+    2.4881
+    3.9949
+z =
+   -1.9390
+    0.5424
+   -1.0271
+    3.5119
+   -0.9949
+P*w
+ans =
+    2.9390
+    7.4576
+    3.0271
+    2.4881
+    3.9949
+w
+w =
+    2.9390
+    7.4576
+    3.0271
+    2.4881
+    3.9949
+P*z
+ans =
+   1.0e-14 *
+   -0.0333
+    0.1943
+    0.0389
+   -0.0007
+    0.0944
+PW = A*inv(A'*A)*A'
+PW =
+    0.6680   -0.1029    0.0199    0.4334    0.1513
+   -0.1029    0.7840    0.1902   -0.0233    0.3493
+    0.0199    0.1902    0.8148    0.1317   -0.3114
+    0.4334   -0.0233    0.1317    0.2989    0.0616
+    0.1513    0.3493   -0.3114    0.0616    0.4343
+norm(PW - P)
+ans =
+   2.6971e-15
+%small is zero
+%question 4
+xls = inv(A'*A)*A'*v
+xls =
+    2.0217
+   -0.4752
+   -0.1452
+A*xls
+ans =
+    2.9390
+    7.4576
+    3.0271
+    2.4881
+    3.9949
+w
+w =
+    2.9390
+    7.4576
+    3.0271
+    2.4881
+    3.9949
+y = rvect(3)
+y =
+     7
+     4
+     4
+P*A*y
+ans =
+   88.0000
+   98.0000
+   42.0000
+   65.0000
+   68.0000
+A*y
+ans =
+    88
+    98
+    42
+    65
+    68
+norm(A*xls - v), norm(A*y - v)
+ans =
+    4.2933
+ans =
+  158.0348
+%question 5
+t = [1:10]'
+t =
+     1
+     2
+     3
+     4
+     5
+     6
+     7
+     8
+     9
+    10
+y = 4+t; linefit(t,y)
+y = 4+t; linefit(t,y)
+y = 2 + 4*rand(10, 1) + t; linefit(t,y)
+t = [5 10 15 20 25 30]
+[Warning: Function /.autofs/ilab/ilab_users/schaffna/250cfinal/randperm.m has the same name as a MATLAB builtin. We suggest
+you rename the function to avoid a potential name conflict.] 
+t =
+     5    10    15    20    25    30
+y = [140 290 560 910 1400 2000]
+y =
+         140         290         560         910        1400        2000
+C = [ [1; 1; 1; 1; 1; 1], t', (t.^2)']
+C =
+     1     5    25
+     1    10   100
+     1    15   225
+     1    20   400
+     1    25   625
+     1    30   900
+figure; plot(t,y,'*'); hold on
+s = [0:.1:30]; u = ones(301,1); A =  [u s' (s.^2)'];
+plot(s, A*x)
+{Error using <a href="matlab:helpUtils.errorDocCallback('mtimes')" style="font-weight:bold"> * </a>
+Inner matrix dimensions must agree.} 

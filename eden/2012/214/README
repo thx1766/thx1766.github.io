@@ -1,0 +1,34 @@
+FILE MANIFEST
+main.c						1
+|-->tokenizer.h					2
+    |-->tokenMVC.h				3
+        |-->tokenModel.h			4
+        |   |-->tokenList.h			5
+        |   |   |-->tokenList.c			6
+        |   |       |--><struct tokenList>	
+        |   |-->tokenNode.h			7
+        |       |-->tokenNode.c			8
+        |           |--><struct tokenNode>	
+        |-->tokenView.h				9
+        |   |-->displayNode.h			10
+        |   |   |-->displayNode.c		11
+        |   |       |-->displayNode()
+        |   |-->usage.h				12
+        |       |-->usage.c			13
+        |           |-->usage()
+        |-->tokenController.h			14
+            |-->createNode.h			15
+            |   |-->createNode.c		16
+            |       |-->createNode()
+            |-->createList.h			17
+            |   |-->createList.c		18
+            |       |-->createList()
+            |-->createTokenizer.h		19
+            |   |-->createTokenizer.c		20
+            |       |-->createTokenizer()
+            |-->destroyNode.h			21
+            |   |-->destroyNode.c		22
+            |       |-->destroyNode()
+            |-->destroyList.h			23
+            |   |-->destroyList.c		24
+            |       |-->destroyList()

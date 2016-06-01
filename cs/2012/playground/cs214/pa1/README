@@ -1,0 +1,3 @@
+#! Bash
+tar cfz ./pa1.tgz ./pa1
+tar tfz ./pa1.tgz
