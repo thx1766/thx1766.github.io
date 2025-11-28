@@ -95,7 +95,6 @@ canvas {
     // Handle pointer events on uiCanvas (touch-friendly controls)
     uiCanvas.addEventListener('pointerdown', function(e) { // use touch/pointer events for mobile controls [oai_citation:6‡gamedevjs.com](https://gamedevjs.com/articles/best-practices-of-building-mobile-friendly-html5-games/#:~:text=,instead%20of%20the%20click%20event)
         e.preventDefault(); // prevent page scrolling/zooming when using controls
-        uiCanvas.setPointerCapture(e.pointerId);
         const rect = uiCanvas.getBoundingClientRect();
         const px = e.clientX - rect.left;
         const py = e.clientY - rect.top;
@@ -146,6 +145,19 @@ canvas {
             joystickTouchId = null;
             joystickActive = false;
             // reset joystick knob
+            joystickKnob.x = joystickBase.x;
+            joystickKnob.y = joystickBase.y;
+        }
+        if(e.pointerId === actionTouchId) {
+            actionTouchId = null;
+            attackPressed = false;
+        }
+    });
+
+    uiCanvas.addEventListener('pointercancel', function(e) {
+        if(e.pointerId === joystickTouchId) {
+            joystickTouchId = null;
+            joystickActive = false;
             joystickKnob.x = joystickBase.x;
             joystickKnob.y = joystickBase.y;
         }
