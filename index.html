@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> <!-- Responsive viewport for mobile devices [oai_citation:0‡gamedevjs.com](https://gamedevjs.com/articles/best-practices-of-building-mobile-friendly-html5-games/#:~:text=,works%20well%20on%20different%20devices) -->
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+#gameCanvas {
+    z-index: 1;
+}
+#uiCanvas {
+    z-index: 2;
+}
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<canvas id="uiCanvas"></canvas>
+<script>
+(function() {
+    // Get canvases and contexts
+    const gameCanvas = document.getElementById('gameCanvas');
+    const uiCanvas = document.getElementById('uiCanvas');
+    const gameCtx = gameCanvas.getContext('2d');
+    const uiCtx = uiCanvas.getContext('2d');
+    // Game state variables
+    let player = { x: 100, y: 100, radius: 10, speed: 2, color: 'blue' };
+    const enemies = [];
+    const maxEnemies = 10;
+    let killCount = 0;
+    let mission = 1; // 1: eliminate enemies, 2: reach zone
+    const targetZone = { x: 200, y: 200, size: 50 }; // target zone for mission 2
+    let attackPressed = false;
+    // Joystick control variables
+    // Virtual joystick base (movement control) [oai_citation:1‡gamedevjs.com](https://gamedevjs.com/articles/best-practices-of-building-mobile-friendly-html5-games/#:~:text=,provides%20a%20great%20user%20experience) [oai_citation:2‡gamedevjs.com](https://gamedevjs.com/articles/best-practices-of-building-mobile-friendly-html5-games/#:~:text=,easy%20to%20understand%20to%20ensure)
+    let joystickTouchId = null;
+    let joystickBase = { x: 80, y: 80 };
+    let joystickRadius = 50; // joystick base radius (large for touch) [oai_citation:3‡gamedevjs.com](https://gamedevjs.com/articles/best-practices-of-building-mobile-friendly-html5-games/#:~:text=,easy%20to%20understand%20to%20ensure)
+    let joystickKnob = { x: 80, y: 80 };
+    const maxSpeed = 3;
+    let joystickActive = false;
+    // Action button (e.g., attack)
+    let actionTouchId = null;
+    let actionButton = { x: 0, y: 0, radius: 30 }; // action button radius (large for touch) [oai_citation:4‡gamedevjs.com](https://gamedevjs.com/articles/best-practices-of-building-mobile-friendly-html5-games/#:~:text=,easy%20to%20understand%20to%20ensure)
+    
+    // Resize canvases for device resolution (Hi-DPI support)
+    function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        gameCanvas.width = window.innerWidth * dpr;
+        gameCanvas.height = window.innerHeight * dpr;
+        gameCanvas.style.width = window.innerWidth + 'px';
+        gameCanvas.style.height = window.innerHeight + 'px';
+        gameCtx.scale(dpr, dpr); // scale context for Hi-DPI [oai_citation:5‡gist.github.com](https://gist.github.com/callumlocke/cc258a193839691f60dd#:~:text=%2F%2F%201,ratio)
+        uiCanvas.width = window.innerWidth * dpr;
+        uiCanvas.height = window.innerHeight * dpr;
+        uiCanvas.style.width = window.innerWidth + 'px';
+        uiCanvas.style.height = window.innerHeight + 'px';
+        uiCtx.scale(dpr, dpr);
+        // Recompute control positions
+        joystickBase.x = 80;
+        joystickBase.y = window.innerHeight - 80;
+        joystickKnob.x = joystickBase.x;
+        joystickKnob.y = joystickBase.y;
+        actionButton.x = window.innerWidth - 80;
+        actionButton.y = window.innerHeight - 80;
+        // Position player at center
+        player.x = window.innerWidth / 2;
+        player.y = window.innerHeight / 2;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Generate initial enemies
+    function initEnemies() {
+        enemies.length = 0;
+        for(let i = 0; i < maxEnemies; i++) {
+            const ex = Math.random() * window.innerWidth;
+            const ey = Math.random() * window.innerHeight;
+            const evx = (Math.random() - 0.5) * 2;
+            const evy = (Math.random() - 0.5) * 2;
+            enemies.push({ x: ex, y: ey, dx: evx, dy: evy, size: 15, color: 'red' });
+        }
+    }
+    
+    // Handle pointer events on uiCanvas (touch-friendly controls)
+    uiCanvas.addEventListener('pointerdown', function(e) { // use touch/pointer events for mobile controls [oai_citation:6‡gamedevjs.com](https://gamedevjs.com/articles/best-practices-of-building-mobile-friendly-html5-games/#:~:text=,instead%20of%20the%20click%20event)
+        uiCanvas.setPointerCapture(e.pointerId);
+        const rect = uiCanvas.getBoundingClientRect();
+        const px = e.clientX - rect.left;
+        const py = e.clientY - rect.top;
+        // Joystick control
+        const dx = px - joystickBase.x;
+        const dy = py - joystickBase.y;
+        if(joystickTouchId === null && dx*dx + dy*dy <= joystickRadius*joystickRadius) {
+            joystickTouchId = e.pointerId;
+            joystickActive = true;
+            // Update joystick knob position
+            joystickKnob.x = px;
+            joystickKnob.y = py;
+        }
+        // Attack button control
+        const dax = px - actionButton.x;
+        const day = py - actionButton.y;
+        if(actionTouchId === null && dax*dax + day*day <= actionButton.radius*actionButton.radius) {
+            actionTouchId = e.pointerId;
+            attackPressed = true;
+        }
+    });
+    
+    uiCanvas.addEventListener('pointermove', function(e) {
+        const rect = uiCanvas.getBoundingClientRect();
+        const px = e.clientX - rect.left;
+        const py = e.clientY - rect.top;
+        if(joystickTouchId === e.pointerId) {
+            const dx = px - joystickBase.x;
+            const dy = py - joystickBase.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if(dist > joystickRadius) {
+                joystickKnob.x = joystickBase.x + dx / dist * joystickRadius;
+                joystickKnob.y = joystickBase.y + dy / dist * joystickRadius;
+            } else {
+                joystickKnob.x = px;
+                joystickKnob.y = py;
+            }
+        }
+        if(actionTouchId === e.pointerId) {
+            attackPressed = true;
+        }
+    });
+    
+    uiCanvas.addEventListener('pointerup', function(e) {
+        if(e.pointerId === joystickTouchId) {
+            joystickTouchId = null;
+            joystickActive = false;
+            // reset joystick knob
+            joystickKnob.x = joystickBase.x;
+            joystickKnob.y = joystickBase.y;
+        }
+        if(e.pointerId === actionTouchId) {
+            actionTouchId = null;
+            attackPressed = false;
+        }
+    });
+    
+    // Circle collision detection
+    function circleCollide(x1,y1,r1, x2,y2,r2) {
+        const dx = x1 - x2;
+        const dy = y1 - y2;
+        const r = r1 + r2;
+        return dx*dx + dy*dy <= r*r;
+    }
+    
+    // Update game state
+    function update() {
+        // Move player based on joystick
+        if(joystickActive) {
+            const vx = joystickKnob.x - joystickBase.x;
+            const vy = joystickKnob.y - joystickBase.y;
+            const vlen = Math.sqrt(vx*vx + vy*vy);
+            if(vlen > 0) {
+                player.x += (vx/vlen) * maxSpeed;
+                player.y += (vy/vlen) * maxSpeed;
+            }
+        }
+        // Keep player inside screen
+        player.x = Math.max(player.radius, Math.min(window.innerWidth - player.radius, player.x));
+        player.y = Math.max(player.radius, Math.min(window.innerHeight - player.radius, player.y));
+        
+        // Move enemies
+        for(let enemy of enemies) {
+            enemy.x += enemy.dx;
+            enemy.y += enemy.dy;
+            if(enemy.x < 0 || enemy.x > window.innerWidth) enemy.dx *= -1;
+            if(enemy.y < 0 || enemy.y > window.innerHeight) enemy.dy *= -1;
+        }
+        
+        // Handle collisions between player and enemies
+        for(let i = enemies.length - 1; i >= 0; i--) {
+            const e = enemies[i];
+            if(circleCollide(player.x, player.y, player.radius, e.x, e.y, e.size)) {
+                if(attackPressed && mission === 1) {
+                    // eliminate enemy
+                    enemies.splice(i, 1);
+                    killCount++;
+                } else {
+                    // bounce enemy away
+                    e.dx *= -1;
+                    e.dy *= -1;
+                }
+            }
+        }
+        
+        // Mission logic
+        if(mission === 1 && killCount >= 5) {
+            mission = 2;
+        }
+        if(mission === 2) {
+            // If player enters target zone, reset game
+            if(player.x > targetZone.x && player.x < targetZone.x + targetZone.size
+               && player.y > targetZone.y && player.y < targetZone.y + targetZone.size) {
+                mission = 1;
+                killCount = 0;
+                initEnemies();
+            }
+        }
+    }
+    
+    // Draw game elements on gameCanvas
+    function drawGame() {
+        // Clear screen
+        gameCtx.fillStyle = '#ffffff';
+        gameCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        // Draw target zone
+        if(mission === 2) {
+            gameCtx.fillStyle = 'lightgreen';
+            gameCtx.fillRect(targetZone.x, targetZone.y, targetZone.size, targetZone.size);
+        }
+        // Draw player (simple stick figure)
+        gameCtx.fillStyle = player.color;
+        // head
+        gameCtx.beginPath();
+        gameCtx.arc(player.x, player.y - 15, 5, 0, Math.PI*2);
+        gameCtx.fill();
+        // body
+        gameCtx.beginPath();
+        gameCtx.moveTo(player.x, player.y - 10);
+        gameCtx.lineTo(player.x, player.y + 5);
+        gameCtx.stroke();
+        // arms
+        gameCtx.beginPath();
+        gameCtx.moveTo(player.x - 8, player.y - 5);
+        gameCtx.lineTo(player.x + 8, player.y - 5);
+        gameCtx.stroke();
+        // legs
+        gameCtx.beginPath();
+        gameCtx.moveTo(player.x, player.y + 5);
+        gameCtx.lineTo(player.x - 5, player.y + 15);
+        gameCtx.moveTo(player.x, player.y + 5);
+        gameCtx.lineTo(player.x + 5, player.y + 15);
+        gameCtx.stroke();
+        // Draw enemies (blocky)
+        for(let enemy of enemies) {
+            gameCtx.fillStyle = enemy.color;
+            gameCtx.fillRect(enemy.x - enemy.size/2, enemy.y - enemy.size/2, enemy.size, enemy.size);
+        }
+        // Draw mission status text
+        gameCtx.fillStyle = 'black';
+        gameCtx.font = '16px sans-serif'; // mobile-friendly font size [oai_citation:7‡gamedevjs.com](https://gamedevjs.com/articles/best-practices-of-building-mobile-friendly-html5-games/#:~:text=the%20device%E2%80%99s%20tilt.%20,to%20tap%20on%20small%20screens)
+        if(mission === 1) {
+            gameCtx.fillText(`Mission: Eliminate 5 enemies (${killCount})`, 10, 20);
+        } else {
+            gameCtx.fillText('Mission: Reach the green zone', 10, 20);
+        }
+    }
+    
+    // Draw UI elements on uiCanvas
+    function drawUI() {
+        uiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        // Draw joystick base
+        uiCtx.globalAlpha = 0.5;
+        uiCtx.beginPath();
+        uiCtx.arc(joystickBase.x, joystickBase.y, joystickRadius, 0, Math.PI*2);
+        uiCtx.fillStyle = '#888';
+        uiCtx.fill();
+        // Draw joystick knob
+        uiCtx.globalAlpha = 1.0;
+        uiCtx.beginPath();
+        uiCtx.arc(joystickKnob.x, joystickKnob.y, 20, 0, Math.PI*2);
+        uiCtx.fillStyle = '#444';
+        uiCtx.fill();
+        // Draw attack button
+        uiCtx.globalAlpha = actionTouchId ? 0.7 : 0.5;
+        uiCtx.beginPath();
+        uiCtx.arc(actionButton.x, actionButton.y, actionButton.radius, 0, Math.PI*2);
+        uiCtx.fillStyle = '#f00';
+        uiCtx.fill();
+    }
+    
+    function gameLoop() {
+        update();
+        drawGame();
+        drawUI();
+        requestAnimationFrame(gameLoop); // smooth animation loop [oai_citation:8‡stackoverflow.com](https://stackoverflow.com/questions/16191324/performance-problems-with-html5-canvas-in-some-mobile-browsers#:~:text=,nothing%20compared%20to%20native%20requestAnimationFrame)
+    }
+    
+    // Start the game
+    resizeCanvas();
+    initEnemies();
+    gameLoop();
+})();
+</script>
+</body>
+</html>
