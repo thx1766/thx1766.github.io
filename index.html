@@ -42,6 +42,8 @@ canvas {
     let mission = 1; // 1: eliminate enemies, 2: reach zone
     const targetZone = { x: 200, y: 200, size: 50 }; // target zone for mission 2
     let attackPressed = false;
+    // Keyboard input
+    const keyState = { up: false, down: false, left: false, right: false };
     // Joystick control variables
     // Virtual joystick base (movement control) [oai_citation:1‡gamedevjs.com](https://gamedevjs.com/articles/best-practices-of-building-mobile-friendly-html5-games/#:~:text=,provides%20a%20great%20user%20experience) [oai_citation:2‡gamedevjs.com](https://gamedevjs.com/articles/best-practices-of-building-mobile-friendly-html5-games/#:~:text=,easy%20to%20understand%20to%20ensure)
     let joystickTouchId = null;
@@ -166,6 +168,69 @@ canvas {
             attackPressed = false;
         }
     });
+
+    // Keyboard controls for desktop browsers
+    window.addEventListener('keydown', function(e) {
+        switch(e.key) {
+            case 'ArrowUp':
+            case 'w':
+            case 'W':
+                keyState.up = true;
+                break;
+            case 'ArrowDown':
+            case 's':
+            case 'S':
+                keyState.down = true;
+                break;
+            case 'ArrowLeft':
+            case 'a':
+            case 'A':
+                keyState.left = true;
+                break;
+            case 'ArrowRight':
+            case 'd':
+            case 'D':
+                keyState.right = true;
+                break;
+            case ' ':
+                attackPressed = true;
+                break;
+            default:
+                return;
+        }
+        e.preventDefault();
+    });
+
+    window.addEventListener('keyup', function(e) {
+        switch(e.key) {
+            case 'ArrowUp':
+            case 'w':
+            case 'W':
+                keyState.up = false;
+                break;
+            case 'ArrowDown':
+            case 's':
+            case 'S':
+                keyState.down = false;
+                break;
+            case 'ArrowLeft':
+            case 'a':
+            case 'A':
+                keyState.left = false;
+                break;
+            case 'ArrowRight':
+            case 'd':
+            case 'D':
+                keyState.right = false;
+                break;
+            case ' ':
+                attackPressed = false;
+                break;
+            default:
+                return;
+        }
+        e.preventDefault();
+    });
     
     // Circle collision detection
     function circleCollide(x1,y1,r1, x2,y2,r2) {
@@ -177,15 +242,32 @@ canvas {
     
     // Update game state
     function update() {
-        // Move player based on joystick
+        // Move player based on joystick and keyboard
+        let moveX = 0;
+        let moveY = 0;
+
         if(joystickActive) {
             const vx = joystickKnob.x - joystickBase.x;
             const vy = joystickKnob.y - joystickBase.y;
             const vlen = Math.sqrt(vx*vx + vy*vy);
             if(vlen > 0) {
-                player.x += (vx/vlen) * maxSpeed;
-                player.y += (vy/vlen) * maxSpeed;
+                moveX += vx / vlen;
+                moveY += vy / vlen;
             }
+        }
+
+        const keyX = (keyState.right ? 1 : 0) - (keyState.left ? 1 : 0);
+        const keyY = (keyState.down ? 1 : 0) - (keyState.up ? 1 : 0);
+        if(keyX !== 0 || keyY !== 0) {
+            const klen = Math.sqrt(keyX*keyX + keyY*keyY);
+            moveX += keyX / klen;
+            moveY += keyY / klen;
+        }
+
+        const mlen = Math.sqrt(moveX*moveX + moveY*moveY);
+        if(mlen > 0) {
+            player.x += (moveX / mlen) * maxSpeed;
+            player.y += (moveY / mlen) * maxSpeed;
         }
         // Keep player inside screen
         player.x = Math.max(player.radius, Math.min(window.innerWidth - player.radius, player.x));
