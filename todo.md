@@ -24,3 +24,9 @@ solution: give an option when the page is loaded to switch the handedness of the
 
 bug: rotating portrait mode on phone changes joystick and attack button locations but the bad guys are off screen when rotated from portrait to landscape or when its initially landscape and then rotated to portrait, probably an issue on iPad as well
 solution: move enemies to the part of the screen that is not cut off when the device is rotated
+
+implementation tasks (ordered; original item text preserved above):
+1. [x] Bug fix: rotate portrait/landscape enemy visibility — clamp and reposition enemies within the active viewport on resize/orientation events.
+2. [x] Combined bug/feature: enemy differentiation plus handheld weapons — redesign heads into circles with triangle/square/pentagon hats tied to matching colors and assign weapon types per enemy with a mature-content visibility toggle.
+3. [x] Feature: number of enemies proportional to screen size — compute enemy count from viewport area (e.g., small ~7, large ~14) and rebalance when the screen size changes.
+4. [x] Feature: settings for handedness and input accessibility — add UI toggles for left/right-handed layout, joystick/arrow/WASD enablement, keyboard-driven joystick indicator, and weapon visibility.
