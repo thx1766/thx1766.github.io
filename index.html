@@ -83,6 +83,16 @@ canvas {
     window.addEventListener('resize', resizeCanvas);
     
     // Generate initial enemies
+    const enemyStyles = [
+        { type: 'grunt', color: '#c0392b', headRadius: 5, bodyLength: 14, armLength: 10, legLength: 12, flair: 'band' },
+        { type: 'brute', color: '#8e44ad', headRadius: 6, bodyLength: 18, armLength: 12, legLength: 14, flair: 'shoulder' },
+        { type: 'scout', color: '#e67e22', headRadius: 4, bodyLength: 12, armLength: 11, legLength: 16, flair: 'antenna' }
+    ];
+
+    function pickEnemyStyle() {
+        return enemyStyles[Math.floor(Math.random() * enemyStyles.length)];
+    }
+
     function initEnemies() {
         enemies.length = 0;
         for(let i = 0; i < maxEnemies; i++) {
@@ -90,7 +100,9 @@ canvas {
             const ey = Math.random() * window.innerHeight;
             const evx = (Math.random() - 0.5) * 2;
             const evy = (Math.random() - 0.5) * 2;
-            enemies.push({ x: ex, y: ey, dx: evx, dy: evy, size: 15, color: 'red' });
+            const style = pickEnemyStyle();
+            const hitRadius = Math.max(style.headRadius + style.bodyLength * 0.5, style.legLength);
+            enemies.push({ x: ex, y: ey, dx: evx, dy: evy, size: hitRadius, color: style.color, style });
         }
     }
     
@@ -345,10 +357,60 @@ canvas {
         gameCtx.moveTo(player.x, player.y + 5);
         gameCtx.lineTo(player.x + 5, player.y + 15);
         gameCtx.stroke();
-        // Draw enemies (blocky)
+        // Draw enemies (stick figure bad guys)
         for(let enemy of enemies) {
-            gameCtx.fillStyle = enemy.color;
-            gameCtx.fillRect(enemy.x - enemy.size/2, enemy.y - enemy.size/2, enemy.size, enemy.size);
+            const s = enemy.style;
+            const torsoTopY = enemy.y - s.bodyLength * 0.5;
+            const torsoBottomY = enemy.y + s.bodyLength * 0.5;
+            gameCtx.strokeStyle = s.color;
+            gameCtx.fillStyle = s.color;
+            gameCtx.lineWidth = 2;
+
+            // head
+            gameCtx.beginPath();
+            gameCtx.arc(enemy.x, torsoTopY - s.headRadius, s.headRadius, 0, Math.PI * 2);
+            gameCtx.fill();
+
+            // torso
+            gameCtx.beginPath();
+            gameCtx.moveTo(enemy.x, torsoTopY);
+            gameCtx.lineTo(enemy.x, torsoBottomY);
+            gameCtx.stroke();
+
+            // arms
+            gameCtx.beginPath();
+            gameCtx.moveTo(enemy.x - s.armLength, enemy.y - 2);
+            gameCtx.lineTo(enemy.x + s.armLength, enemy.y - 2);
+            gameCtx.stroke();
+
+            // legs
+            gameCtx.beginPath();
+            gameCtx.moveTo(enemy.x, torsoBottomY);
+            gameCtx.lineTo(enemy.x - s.legLength * 0.5, torsoBottomY + s.legLength);
+            gameCtx.moveTo(enemy.x, torsoBottomY);
+            gameCtx.lineTo(enemy.x + s.legLength * 0.5, torsoBottomY + s.legLength);
+            gameCtx.stroke();
+
+            // flair per type
+            if(s.flair === 'band') {
+                gameCtx.beginPath();
+                gameCtx.moveTo(enemy.x - s.headRadius - 2, torsoTopY - s.headRadius);
+                gameCtx.lineTo(enemy.x + s.headRadius + 2, torsoTopY - s.headRadius - 2);
+                gameCtx.stroke();
+            } else if(s.flair === 'shoulder') {
+                gameCtx.lineWidth = 3;
+                gameCtx.beginPath();
+                gameCtx.moveTo(enemy.x - s.armLength * 0.6, enemy.y - 5);
+                gameCtx.lineTo(enemy.x + s.armLength * 0.6, enemy.y - 5);
+                gameCtx.stroke();
+                gameCtx.lineWidth = 2;
+            } else if(s.flair === 'antenna') {
+                gameCtx.beginPath();
+                gameCtx.moveTo(enemy.x, torsoTopY - s.headRadius * 2);
+                gameCtx.lineTo(enemy.x, torsoTopY - s.headRadius * 3.5);
+                gameCtx.arc(enemy.x, torsoTopY - s.headRadius * 3.5, 1.5, 0, Math.PI * 2);
+                gameCtx.fill();
+            }
         }
         // Draw mission status text
         gameCtx.fillStyle = 'black';
