@@ -70,3 +70,12 @@ solution: when wasd keys are used also animate joystick to match movement of cha
 
 bug: colliding with enemies does not cause them to stop moving any more
 solution: add a debug menu button next to settings button that has an appropridate debuggig icon, with a menu opening to toggle capsule boundary visualization for collision detection also make sure that the enemy bad guy boundary is the same as the collision detection boundary, and when a collsiion is detected, stop the bad guy enemy from moving and show an animated "fight triggered" notification breifly but if the attack button is pressed quickly enough interrupt for an animationthat updates with "fight won" notification or just display fight won notification after enemy attacked after the fight triggered notification is displayed
+
+feature: render mode toggle
+solution: add a 2D/3D toggle next to the settings control, transition the canvases with a crossfade, and persist the preferred view.
+
+feature: extraction flow after five victories
+solution: once five enemies are defeated, highlight the green square, move the hero inside an expanded containment box when entered, and clear remaining enemies with a tighter blast radius inside the arena.
+
+feature: inventory and settings presentation
+solution: start with the settings menu closed, dock the inventory panel to the left, and on small screens present it as a top banner when opened.

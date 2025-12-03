@@ -12,10 +12,13 @@ import { createRenderer } from './render.js';
     const debugToggle = document.getElementById('debugToggle');
     const inventoryPanel = document.getElementById('inventoryPanel');
     const inventoryToggle = document.getElementById('inventoryToggle');
+    const renderModeToggle = document.getElementById('renderModeToggle');
     const notificationBar = document.getElementById('notificationBar');
     const creditsDisplay = document.getElementById('creditsDisplay');
     const inventoryList = document.getElementById('inventoryList');
     const equippedDisplay = document.getElementById('equippedDisplay');
+
+    const storedRenderMode = localStorage.getItem('renderModePreference');
 
     const settings = {
         enableJoystick: true,
@@ -24,6 +27,8 @@ import { createRenderer } from './render.js';
         keyboardJoystickIndicator: true,
         handedness: 'right',
         enableWeapons: true,
+        renderMode: storedRenderMode === '3d' ? '3d' : '2d',
+        isRenderTransitioning: false,
     };
 
     const debugState = {
@@ -57,6 +62,7 @@ import { createRenderer } from './render.js';
         debugToggle,
         inventoryPanel,
         inventoryToggle,
+        renderModeToggle,
         debugRefs,
         formRefs,
         settings,
@@ -75,6 +81,7 @@ import { createRenderer } from './render.js';
         },
         onDebugChanged: () => {},
         onSkipLevel2: () => gameplay.skipToLevelTwo(),
+        onRenderModeChange: (mode) => handleRenderModeChange(mode),
     });
 
     const renderer = createRenderer(gameCanvas, uiCanvas, settings, gameplay, inputSystem.joystickState, inputSystem.actionState, inputSystem.setControlPositions, debugState);
@@ -164,14 +171,32 @@ import { createRenderer } from './render.js';
         requestAnimationFrame(gameLoop);
     }
 
-    uiControls.setSettingsOpen(true);
+    uiControls.setSettingsOpen(false);
+    uiControls.setRenderMode(settings.renderMode);
     uiControls.setupSettingsPanel();
     uiControls.syncSettingsFromUI();
     uiControls.syncDebugFromUI();
+    uiControls.setRenderTransitioning(false);
     inputSystem.setControlPositions();
     inputSystem.attachInputListeners();
     gameplay.initEnemies();
     resizeAndClamp();
+    if (settings.renderMode === '3d') {
+        renderer.requestRenderMode('3d');
+    }
     gameLoop();
     window.addEventListener('resize', resizeAndClamp);
+
+    function handleRenderModeChange(mode) {
+        if (settings.isRenderTransitioning || settings.renderMode === mode) return;
+        settings.isRenderTransitioning = true;
+        uiControls.setRenderTransitioning(true);
+        renderer.requestRenderMode(mode, (appliedMode) => {
+            settings.renderMode = appliedMode;
+            settings.isRenderTransitioning = false;
+            uiControls.setRenderMode(appliedMode);
+            uiControls.setRenderTransitioning(false);
+            localStorage.setItem('renderModePreference', appliedMode);
+        });
+    }
 })();

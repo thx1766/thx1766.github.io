@@ -26,3 +26,9 @@ This project is a small browser game rendered on layered canvases with a togglab
 - **App lifecycle**: Initialization, resizing, and the main animation loop live in `assets/js/main.js`.
 
 Use this map to quickly locate modules when updating controls, visuals, or game rules.
+
+## Recently added expectations
+- The 2D/3D render toggle lives next to the settings toggle in `index.html`; its state is stored in `settings.renderMode` with a transition guard (`settings.isRenderTransitioning`) and persisted via `localStorage`.
+- The render pipeline in `assets/js/render.js` now crossfades between `draw2DScene` and `draw3DScene` using offscreen buffers; prefer updating those helpers instead of reintroducing a monolithic draw path.
+- Mission flow now requires five victories before heading to a visible green target zone; entering it moves the player into an enlarged containment box, clears enemies, and uses a reduced blast radius for charges.
+- The settings panel should load closed, and the inventory panel is docked to the left (becoming a banner on small screens); keep positioning changes in CSS aligned with these defaults.

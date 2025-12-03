@@ -34,17 +34,18 @@ export function createGameplaySystem(settings, keyState, joystickState, actionSt
     let playerCentered = false;
     let killCount = 0;
     let mission = 1;
+    let extractionReady = false;
     const targetZone = { x: 200, y: 200, size: 50 };
 
     const inventory = { credits: 150, items: { weapons: {}, armor: {} }, equipped: { weapon: null, armor: null } };
     const notifications = [];
 
     const level2State = {
-        containment: { x: 120, y: 120, size: 240 },
+        containment: { x: 120, y: 120, size: 320 },
         charges: [],
         planted: [],
         carryingCharge: false,
-        blastRadius: 90,
+        blastRadius: 60,
         walls: [],
     };
 
@@ -252,10 +253,14 @@ export function createGameplaySystem(settings, keyState, joystickState, actionSt
 
     function setupLevel2() {
         mission = 2;
-        level2State.containment.x = Math.max(40, window.innerWidth / 2 - 180);
-        level2State.containment.y = Math.max(40, window.innerHeight / 2 - 180);
+        extractionReady = false;
+        level2State.containment.x = Math.max(40, window.innerWidth / 2 - level2State.containment.size / 2);
+        level2State.containment.y = Math.max(40, window.innerHeight / 2 - level2State.containment.size / 2);
         spawnCharges(3);
         spawnWalls();
+        player.x = level2State.containment.x + level2State.containment.size / 2;
+        player.y = level2State.containment.y + level2State.containment.size / 2;
+        enemies.length = 0;
         notify('Containment breached: collect mining charges!');
     }
 
@@ -321,6 +326,7 @@ export function createGameplaySystem(settings, keyState, joystickState, actionSt
             if (player.x >= targetZone.x && player.x <= targetZone.x + targetZone.size && player.y >= targetZone.y && player.y <= targetZone.y + targetZone.size) {
                 mission = 1;
                 killCount = 0;
+                extractionReady = false;
                 targetZone.x = Math.random() * (window.innerWidth - targetZone.size);
                 targetZone.y = Math.random() * (window.innerHeight - targetZone.size);
                 initEnemies();
@@ -331,14 +337,17 @@ export function createGameplaySystem(settings, keyState, joystickState, actionSt
 
     function updateMission() {
         if (mission === 1 && killCount >= 5) {
-            setupLevel2();
+            extractionReady = true;
+            targetZone.x = window.innerWidth / 2 - targetZone.size / 2;
+            targetZone.y = window.innerHeight / 2 - targetZone.size / 2;
         }
         if (mission === 2) {
             handleLevel2();
         }
-        if (mission === 1) {
+        if (mission === 1 && extractionReady) {
             if (player.x >= targetZone.x && player.x <= targetZone.x + targetZone.size && player.y >= targetZone.y && player.y <= targetZone.y + targetZone.size) {
                 notify('Extraction point reached. Mission ready.');
+                setupLevel2();
             }
         }
     }
@@ -360,7 +369,7 @@ export function createGameplaySystem(settings, keyState, joystickState, actionSt
     }
 
     function missionStateSnapshot() {
-        return { mission, killCount, targetZone, level2State };
+        return { mission, killCount, targetZone, level2State, extractionReady };
     }
 
     function inventorySnapshot() {

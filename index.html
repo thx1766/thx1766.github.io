@@ -7,11 +7,12 @@
 <body>
 <div id="settingsContainer">
     <div class="button-column">
-        <button id="settingsToggle" aria-expanded="true" aria-controls="settingsPanel" data-open-label="✕" data-closed-label="⚙">✕</button>
+        <button id="renderModeToggle" aria-pressed="false" aria-label="Switch to 3D view">Switch to 3D</button>
+        <button id="settingsToggle" aria-expanded="false" aria-controls="settingsPanel" data-open-label="✕" data-closed-label="⚙">⚙</button>
         <button id="debugToggle" aria-expanded="false" aria-controls="debugPanel" data-open-label="✕" data-closed-label="🐞">🐞</button>
         <button id="inventoryToggle" aria-expanded="false" aria-controls="inventoryPanel" data-open-label="✕" data-closed-label="🎒">🎒</button>
     </div>
-    <div id="settingsPanel" class="floating-panel">
+    <div id="settingsPanel" class="floating-panel hidden">
         <h3>Settings</h3>
         <div class="section-title">Controls</div>
         <label><input type="checkbox" id="enableJoystick" checked> Enable joystick</label>

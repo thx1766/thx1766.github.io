@@ -1,7 +1,9 @@
-export function setupSettingsUI({ settingsPanel, settingsToggle, debugPanel, debugToggle, inventoryPanel, inventoryToggle, debugRefs, formRefs, settings, debugState, onSettingsChanged, onDebugChanged, onSkipLevel2 }) {
-    let settingsOpen = true;
+export function setupSettingsUI({ settingsPanel, settingsToggle, debugPanel, debugToggle, inventoryPanel, inventoryToggle, renderModeToggle, debugRefs, formRefs, settings, debugState, onSettingsChanged, onDebugChanged, onSkipLevel2, onRenderModeChange }) {
+    let settingsOpen = false;
     let debugOpen = false;
     let inventoryOpen = false;
+    let renderTransitioning = false;
+    let renderMode = settings.renderMode || '2d';
 
     function setPanelState(panel, toggle, open) {
         panel.classList.toggle('hidden', !open);
@@ -24,6 +26,20 @@ export function setupSettingsUI({ settingsPanel, settingsToggle, debugPanel, deb
     function setInventoryOpen(open) {
         inventoryOpen = open;
         setPanelState(inventoryPanel, inventoryToggle, open);
+    }
+
+    function setRenderMode(mode) {
+        renderMode = mode;
+        settings.renderMode = mode;
+        renderModeToggle.textContent = mode === '2d' ? 'Switch to 3D' : 'Switch to 2D';
+        renderModeToggle.setAttribute('aria-pressed', String(mode === '3d'));
+        renderModeToggle.title = mode === '2d' ? 'Switch to 3D view' : 'Switch to 2D view';
+    }
+
+    function setRenderTransitioning(active) {
+        renderTransitioning = active;
+        renderModeToggle.disabled = active;
+        renderModeToggle.classList.toggle('is-transitioning', active);
     }
 
     function toggleSettings() { setSettingsOpen(!settingsOpen); }
@@ -66,6 +82,11 @@ export function setupSettingsUI({ settingsPanel, settingsToggle, debugPanel, deb
         debugRefs.skipLevel2.addEventListener('click', () => {
             if (typeof onSkipLevel2 === 'function') onSkipLevel2();
         });
+        renderModeToggle.addEventListener('click', () => {
+            if (renderTransitioning) return;
+            const next = renderMode === '2d' ? '3d' : '2d';
+            if (typeof onRenderModeChange === 'function') onRenderModeChange(next);
+        });
     }
 
     return {
@@ -78,5 +99,7 @@ export function setupSettingsUI({ settingsPanel, settingsToggle, debugPanel, deb
         syncSettingsFromUI,
         syncDebugFromUI,
         setupSettingsPanel,
+        setRenderMode,
+        setRenderTransitioning,
     };
 }

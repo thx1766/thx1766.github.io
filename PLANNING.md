@@ -19,3 +19,8 @@
 ### Encounter variety and pacing
 - Introduce 2D geo-mod walls that can be destroyed when the blast radius overlaps them, opening traversal routes.
 - Consider alternate Level 2 paths (e.g., post-extraction customization) where loot gathered in Level 1 influences available gear and upgrades.
+
+## Recent implementation summary
+- Added a 2D/3D render toggle with a crossfade transition and persisted preference, placing the control next to the settings toggle.
+- Shifted the Level 1 flow so extraction unlocks after five victories, guiding the hero to a visible green square before entering an enlarged containment box with cleared enemies and a smaller blast radius.
+- Repositioned the inventory panel to the left (with a banner layout on small screens) and started the settings menu closed by default.
