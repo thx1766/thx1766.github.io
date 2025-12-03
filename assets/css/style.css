@@ -40,22 +40,8 @@ canvas {
     align-items: flex-end;
 }
 
-#settingsToggle {
-    background: #222;
-    color: #fff;
-    border: 2px solid #444;
-    border-radius: 10px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    transition: background 0.2s ease, transform 0.15s ease;
-}
-
-#settingsToggle:active {
-    transform: scale(0.96);
-}
-
+#renderModeToggle,
+#settingsToggle,
 #debugToggle,
 #inventoryToggle {
     background: #444;
@@ -69,9 +55,21 @@ canvas {
     transition: background 0.2s ease, transform 0.15s ease;
 }
 
+#renderModeToggle:active,
+#settingsToggle:active,
 #debugToggle:active,
 #inventoryToggle:active {
     transform: scale(0.96);
+}
+
+#renderModeToggle {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    border-color: #0e8d72;
+    font-weight: 700;
+}
+
+#renderModeToggle.is-transitioning {
+    opacity: 0.65;
 }
 
 .floating-panel {
@@ -128,6 +126,14 @@ canvas {
     margin-top: 8px;
 }
 
+#inventoryPanel {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    right: auto;
+    transform-origin: top left;
+}
+
 .inventory-item {
     display: flex;
     justify-content: space-between;
@@ -158,4 +164,20 @@ canvas {
 #notificationBar.hidden {
     opacity: 0;
     pointer-events: none;
+}
+
+@media (max-width: 640px) {
+    #inventoryPanel {
+        top: 0;
+        left: 0;
+        right: 0;
+        max-width: none;
+        width: 100%;
+        border-radius: 0 0 10px 10px;
+    }
+
+    #settingsContainer {
+        top: 90px;
+        right: 12px;
+    }
 }
