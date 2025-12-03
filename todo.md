@@ -64,3 +64,9 @@ bug fix summary:
 recent update summary:
 - Moved high-level design ideas into `PLANNING.md` for structured planning.
 - Split the monolithic `index.html` into external CSS and modular JS under `assets/` to match the proposed file organization.
+
+bug: WASD buttons work but do not update joystick ppsiton the way arrow keys do
+solution: when wasd keys are used also animate joystick to match movement of character
+
+bug: colliding with enemies does not cause them to stop moving any more
+solution: add a debug menu button next to settings button that has an appropridate debuggig icon, with a menu opening to toggle capsule boundary visualization for collision detection also make sure that the enemy bad guy boundary is the same as the collision detection boundary, and when a collsiion is detected, stop the bad guy enemy from moving and show an animated "fight triggered" notification breifly but if the attack button is pressed quickly enough interrupt for an animationthat updates with "fight won" notification or just display fight won notification after enemy attacked after the fight triggered notification is displayed
