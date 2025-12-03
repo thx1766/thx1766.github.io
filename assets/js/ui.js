@@ -1,16 +1,34 @@
-export function setupSettingsUI({ settingsPanel, settingsToggle, formRefs, settings, onSettingsChanged }) {
+export function setupSettingsUI({ settingsPanel, settingsToggle, debugPanel, debugToggle, inventoryPanel, inventoryToggle, debugRefs, formRefs, settings, debugState, onSettingsChanged, onDebugChanged, onSkipLevel2 }) {
     let settingsOpen = true;
+    let debugOpen = false;
+    let inventoryOpen = false;
+
+    function setPanelState(panel, toggle, open) {
+        panel.classList.toggle('hidden', !open);
+        toggle.setAttribute('aria-expanded', String(open));
+        const openLabel = toggle.dataset.openLabel || '✕';
+        const closedLabel = toggle.dataset.closedLabel || '⚙';
+        toggle.textContent = open ? openLabel : closedLabel;
+    }
 
     function setSettingsOpen(open) {
         settingsOpen = open;
-        settingsPanel.classList.toggle('hidden', !open);
-        settingsToggle.textContent = open ? '✕' : '⚙';
-        settingsToggle.setAttribute('aria-expanded', String(open));
+        setPanelState(settingsPanel, settingsToggle, open);
     }
 
-    function toggleSettings() {
-        setSettingsOpen(!settingsOpen);
+    function setDebugOpen(open) {
+        debugOpen = open;
+        setPanelState(debugPanel, debugToggle, open);
     }
+
+    function setInventoryOpen(open) {
+        inventoryOpen = open;
+        setPanelState(inventoryPanel, inventoryToggle, open);
+    }
+
+    function toggleSettings() { setSettingsOpen(!settingsOpen); }
+    function toggleDebug() { setDebugOpen(!debugOpen); }
+    function toggleInventory() { setInventoryOpen(!inventoryOpen); }
 
     function syncSettingsFromUI() {
         settings.enableJoystick = formRefs.enableJoystick.checked;
@@ -25,6 +43,14 @@ export function setupSettingsUI({ settingsPanel, settingsToggle, formRefs, setti
         }
     }
 
+    function syncDebugFromUI() {
+        debugState.showColliders = debugRefs.showColliders.checked;
+        debugState.freezeOnCollision = debugRefs.freezeOnCollision.checked;
+        if (typeof onDebugChanged === 'function') {
+            onDebugChanged(debugState);
+        }
+    }
+
     function setupSettingsPanel() {
         formRefs.enableJoystick.addEventListener('change', syncSettingsFromUI);
         formRefs.enableArrowKeys.addEventListener('change', syncSettingsFromUI);
@@ -33,12 +59,24 @@ export function setupSettingsUI({ settingsPanel, settingsToggle, formRefs, setti
         formRefs.enableWeapons.addEventListener('change', syncSettingsFromUI);
         formRefs.handednessRadios.forEach(radio => radio.addEventListener('change', syncSettingsFromUI));
         settingsToggle.addEventListener('click', toggleSettings);
+        debugToggle.addEventListener('click', toggleDebug);
+        inventoryToggle.addEventListener('click', toggleInventory);
+        debugRefs.showColliders.addEventListener('change', syncDebugFromUI);
+        debugRefs.freezeOnCollision.addEventListener('change', syncDebugFromUI);
+        debugRefs.skipLevel2.addEventListener('click', () => {
+            if (typeof onSkipLevel2 === 'function') onSkipLevel2();
+        });
     }
 
     return {
         setSettingsOpen,
         toggleSettings,
+        setDebugOpen,
+        setInventoryOpen,
+        toggleDebug,
+        toggleInventory,
         syncSettingsFromUI,
+        syncDebugFromUI,
         setupSettingsPanel,
     };
 }
