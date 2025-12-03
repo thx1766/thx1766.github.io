@@ -12,7 +12,31 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
         actionTouchId: null,
         actionButton: { x: 0, y: 0, radius: 30 },
         attackPressed: false,
+        label: 'Attack',
     };
+
+    function updateKeyboardJoystickIndicator() {
+        if (!settings.keyboardJoystickIndicator || joystickState.joystickTouchId !== null) return;
+        let dx = 0;
+        let dy = 0;
+        if (keyState.up) dy -= 1;
+        if (keyState.down) dy += 1;
+        if (keyState.left) dx -= 1;
+        if (keyState.right) dx += 1;
+
+        const length = Math.hypot(dx, dy);
+        if (length > 0) {
+            const nx = dx / length;
+            const ny = dy / length;
+            joystickState.joystickKnob.x = joystickState.joystickBase.x + nx * joystickState.joystickRadius;
+            joystickState.joystickKnob.y = joystickState.joystickBase.y + ny * joystickState.joystickRadius;
+            joystickState.joystickActive = true;
+        } else {
+            joystickState.joystickActive = false;
+            joystickState.joystickKnob.x = joystickState.joystickBase.x;
+            joystickState.joystickKnob.y = joystickState.joystickBase.y;
+        }
+    }
 
     function setControlPositions() {
         const joystickOffset = 80;
@@ -112,38 +136,46 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
                 case 'ArrowUp':
                     if (!settings.enableArrowKeys) return;
                     keyState.up = true;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'w':
                 case 'W':
                     if (!settings.enableWASD) return;
                     keyState.up = true;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'ArrowDown':
                     if (!settings.enableArrowKeys) return;
                     keyState.down = true;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 's':
                 case 'S':
                     if (!settings.enableWASD) return;
                     keyState.down = true;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'ArrowLeft':
                     if (!settings.enableArrowKeys) return;
                     keyState.left = true;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'a':
                 case 'A':
                     if (!settings.enableWASD) return;
                     keyState.left = true;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'ArrowRight':
                     if (!settings.enableArrowKeys) return;
                     keyState.right = true;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'd':
                 case 'D':
                     if (!settings.enableWASD) return;
                     keyState.right = true;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case ' ':
                     actionState.attackPressed = true;
@@ -159,38 +191,46 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
                 case 'ArrowUp':
                     if (!settings.enableArrowKeys) return;
                     keyState.up = false;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'w':
                 case 'W':
                     if (!settings.enableWASD) return;
                     keyState.up = false;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'ArrowDown':
                     if (!settings.enableArrowKeys) return;
                     keyState.down = false;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 's':
                 case 'S':
                     if (!settings.enableWASD) return;
                     keyState.down = false;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'ArrowLeft':
                     if (!settings.enableArrowKeys) return;
                     keyState.left = false;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'a':
                 case 'A':
                     if (!settings.enableWASD) return;
                     keyState.left = false;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'ArrowRight':
                     if (!settings.enableArrowKeys) return;
                     keyState.right = false;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case 'd':
                 case 'D':
                     if (!settings.enableWASD) return;
                     keyState.right = false;
+                    updateKeyboardJoystickIndicator();
                     break;
                 case ' ':
                     actionState.attackPressed = false;

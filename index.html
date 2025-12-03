@@ -6,8 +6,12 @@
 </head>
 <body>
 <div id="settingsContainer">
-    <button id="settingsToggle" aria-expanded="true" aria-controls="settingsPanel">✕</button>
-    <div id="settingsPanel">
+    <div class="button-column">
+        <button id="settingsToggle" aria-expanded="true" aria-controls="settingsPanel" data-open-label="✕" data-closed-label="⚙">✕</button>
+        <button id="debugToggle" aria-expanded="false" aria-controls="debugPanel" data-open-label="✕" data-closed-label="🐞">🐞</button>
+        <button id="inventoryToggle" aria-expanded="false" aria-controls="inventoryPanel" data-open-label="✕" data-closed-label="🎒">🎒</button>
+    </div>
+    <div id="settingsPanel" class="floating-panel">
         <h3>Settings</h3>
         <div class="section-title">Controls</div>
         <label><input type="checkbox" id="enableJoystick" checked> Enable joystick</label>
@@ -20,7 +24,20 @@
         <div class="section-title">Content</div>
         <label><input type="checkbox" id="enableWeapons" checked> Show handheld weapons (mature)</label>
     </div>
+    <div id="debugPanel" class="floating-panel hidden">
+        <h3>Debug</h3>
+        <label><input type="checkbox" id="showColliders"> Show collision capsules</label>
+        <label><input type="checkbox" id="freezeOnCollision" checked> Stop enemies when colliding</label>
+        <button id="skipLevel2">Skip to Level 2</button>
+    </div>
+    <div id="inventoryPanel" class="floating-panel hidden">
+        <h3>Inventory</h3>
+        <div id="creditsDisplay">Credits: 0</div>
+        <div id="equippedDisplay"></div>
+        <div id="inventoryList"></div>
+    </div>
 </div>
+<div id="notificationBar" class="hidden"></div>
 <canvas id="gameCanvas"></canvas>
 <canvas id="uiCanvas"></canvas>
 <script type="module" src="./assets/js/main.js"></script>

@@ -52,15 +52,75 @@ function drawWeapon(gameCtx, enemy, torsoTopY, torsoBottomY) {
     }
 }
 
-function drawGame(gameCtx, state, settings) {
+function drawContainment(gameCtx, level2State, player) {
+    const { containment, charges, planted, blastRadius, walls, carryingCharge } = level2State;
+    gameCtx.save();
+    gameCtx.strokeStyle = '#27ae60';
+    gameCtx.setLineDash([6, 4]);
+    gameCtx.strokeRect(containment.x, containment.y, containment.size, containment.size);
+    gameCtx.setLineDash([]);
+
+    walls.forEach(wall => {
+        gameCtx.fillStyle = wall.destroyed ? 'rgba(189, 195, 199, 0.4)' : '#34495e';
+        gameCtx.fillRect(wall.x, wall.y, wall.width, wall.height);
+    });
+
+    charges.forEach(charge => {
+        gameCtx.fillStyle = '#f39c12';
+        gameCtx.beginPath();
+        gameCtx.arc(charge.x, charge.y, 8, 0, Math.PI * 2);
+        gameCtx.fill();
+    });
+
+    planted.forEach(charge => {
+        gameCtx.fillStyle = '#e74c3c';
+        gameCtx.beginPath();
+        gameCtx.arc(charge.x, charge.y, 10, 0, Math.PI * 2);
+        gameCtx.fill();
+        gameCtx.strokeStyle = 'rgba(231, 76, 60, 0.5)';
+        gameCtx.beginPath();
+        gameCtx.arc(charge.x, charge.y, charge.radius, 0, Math.PI * 2);
+        gameCtx.stroke();
+    });
+
+    if (carryingCharge) {
+        gameCtx.strokeStyle = 'rgba(230, 126, 34, 0.7)';
+        gameCtx.beginPath();
+        gameCtx.arc(player.x, player.y, blastRadius, 0, Math.PI * 2);
+        gameCtx.stroke();
+    }
+
+    gameCtx.restore();
+}
+
+function drawDebugColliders(gameCtx, player, enemies) {
+    gameCtx.save();
+    gameCtx.strokeStyle = 'rgba(0,0,0,0.45)';
+    gameCtx.setLineDash([4, 4]);
+    gameCtx.beginPath();
+    gameCtx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+    gameCtx.stroke();
+    enemies.forEach(enemy => {
+        gameCtx.beginPath();
+        gameCtx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
+        gameCtx.stroke();
+    });
+    gameCtx.restore();
+}
+
+function drawGame(gameCtx, state, settings, debugState) {
     const { player, enemies, missionState } = state;
-    const { mission, killCount, targetZone } = missionState();
+    const { mission, killCount, targetZone, level2State } = missionState();
 
     gameCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
     gameCtx.fillStyle = 'white';
     gameCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-    if (mission === 2) {
+    if (mission === 2 || mission === 3) {
+        drawContainment(gameCtx, level2State, player);
+    }
+
+    if (mission === 2 || mission === 3) {
         gameCtx.fillStyle = 'lightgreen';
         gameCtx.fillRect(targetZone.x, targetZone.y, targetZone.size, targetZone.size);
     }
@@ -115,12 +175,18 @@ function drawGame(gameCtx, state, settings) {
         }
     }
 
+    if (debugState.showColliders) {
+        drawDebugColliders(gameCtx, player, enemies);
+    }
+
     gameCtx.fillStyle = 'black';
     gameCtx.font = '16px sans-serif';
     if (mission === 1) {
         gameCtx.fillText(`Mission: Eliminate 5 enemies (${killCount})`, 10, 20);
+    } else if (mission === 2) {
+        gameCtx.fillText('Mission: Collect and arm mining charges inside the containment square', 10, 20);
     } else {
-        gameCtx.fillText('Mission: Reach the green zone', 10, 20);
+        gameCtx.fillText('Mission: Reach extraction after breaching the wall', 10, 20);
     }
 }
 
@@ -141,9 +207,15 @@ function drawUI(uiCtx, joystickState, actionState, settings) {
     uiCtx.arc(actionState.actionButton.x, actionState.actionButton.y, actionState.actionButton.radius, 0, Math.PI * 2);
     uiCtx.fillStyle = '#f00';
     uiCtx.fill();
+
+    uiCtx.globalAlpha = 1;
+    uiCtx.fillStyle = '#fff';
+    uiCtx.font = '14px sans-serif';
+    uiCtx.textAlign = 'center';
+    uiCtx.fillText(actionState.label || 'Attack', actionState.actionButton.x, actionState.actionButton.y + 5);
 }
 
-export function createRenderer(gameCanvas, uiCanvas, settings, state, joystickState, actionState, setControlPositions) {
+export function createRenderer(gameCanvas, uiCanvas, settings, state, joystickState, actionState, setControlPositions, debugState) {
     const gameCtx = gameCanvas.getContext('2d');
     const uiCtx = uiCanvas.getContext('2d');
 
@@ -165,7 +237,7 @@ export function createRenderer(gameCanvas, uiCanvas, settings, state, joystickSt
     }
 
     function render() {
-        drawGame(gameCtx, state, settings);
+        drawGame(gameCtx, state, settings, debugState);
         drawUI(uiCtx, joystickState, actionState, settings);
     }
 
