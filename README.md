@@ -19,3 +19,5 @@ possibly apple tv version
 right now it works with WASD and arrow keys and spacebar for attack in addition to the touch interface
 
 primary test device is an ipad with a macik keyboard
+
+next commit is replacing red dots with sticj figure bad guys
