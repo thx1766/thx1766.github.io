@@ -60,3 +60,7 @@ bug fix summary:
 - settings menu can now be opened or closed from a top-right button or the q key, with the menu expanding from the toggle.
 - triangle and pentagon hat colors are more contrasted and the hats are larger to make enemy types clearer.
 - the player character now starts at the centered position on both desktop and mobile viewports.
+
+recent update summary:
+- Moved high-level design ideas into `PLANNING.md` for structured planning.
+- Split the monolithic `index.html` into external CSS and modular JS under `assets/` to match the proposed file organization.
