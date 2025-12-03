@@ -30,12 +30,16 @@ solution: move enemies to the part of the screen that is not cut off when the de
 resolution: seems implemented wel but a little hard to confirm with settings menu overly on the whole time
 
 
-ivnestigate:
+bug:
 pentagon hats and fisticufs vs coffee cup - what was implemented?
+solution:
 turns out the coffee cups are there in grey and the fisticufs are red
 pentagons and triangles are too close in color, they should contrast with each other more
 
-investigate: seems like on desktop there are more enemies bad guys like intended, but the starting postion of the good guy dude is not in the center of the screen, also not in center on mobilr
+bug:
+seems like on desktop there are more enemies bad guys like intended, but the starting postion of the good guy dude is not in the center of the screen, also not in center on mobilr
+solution:
+start in the center of the screen on both desktop and mobilr
 
 implementation tasks (ordered; original item text preserved above):
 1. [x] Bug fix: rotate portrait/landscape enemy visibility — clamp and reposition enemies within the active viewport on resize/orientation events.
@@ -44,10 +48,15 @@ implementation tasks (ordered; original item text preserved above):
 4. [x] Feature: settings for handedness and input accessibility — add UI toggles for left/right-handed layout, joystick/arrow/WASD enablement, keyboard-driven joystick indicator, and weapon visibility.
 
 bug: menu should hide when closed and open when q is tapped or button in top corner is tapped
-soluition: top right with menu on left, but menu clsoe button shoud be the same as settings open button), button should be an X when open and a gear or asterisk in a round-cornered ractangle button, and the outline of the settings menu should expand from the round rectangle around the button to the space needed
+solution: top right with menu on left, but menu close button should be the same as settings open button), button should be an X when open and a gear or asterisk in a round-cornered rectangle button, and the outline of the settings menu should expand from the round rectangle around the button to the space needed
 
 bug: contrast for hats
 solution: change hat colors for triangle and pentagon to make them more contrasting with each other, maybe make the hats a bit larger relative to stick figure
 
 bug: good guy stsrting position
 solution: start at center
+
+bug fix summary:
+- settings menu can now be opened or closed from a top-right button or the q key, with the menu expanding from the toggle.
+- triangle and pentagon hat colors are more contrasted and the hats are larger to make enemy types clearer.
+- the player character now starts at the centered position on both desktop and mobile viewports.

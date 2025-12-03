@@ -22,17 +22,53 @@ canvas {
 #uiCanvas {
     z-index: 2;
 }
-#settingsPanel {
+#settingsContainer {
     position: absolute;
     top: 10px;
-    left: 10px;
+    right: 10px;
     z-index: 3;
-    background: rgba(255,255,255,0.9);
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: flex-start;
+}
+
+#settingsToggle {
+    background: #222;
+    color: #fff;
+    border: 2px solid #444;
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+#settingsToggle:active {
+    transform: scale(0.96);
+}
+
+#settingsPanel {
+    background: rgba(255,255,255,0.95);
     padding: 10px;
-    border-radius: 8px;
+    border-radius: 10px;
     font-family: sans-serif;
     max-width: 320px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    border: 2px solid #222;
+    transform-origin: top right;
+    transform: scale(1);
+    opacity: 1;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+#settingsPanel.hidden {
+    opacity: 0;
+    transform: scale(0.92);
+    pointer-events: none;
+    display: none;
 }
 #settingsPanel h3 {
     margin: 0 0 6px 0;
@@ -50,18 +86,21 @@ canvas {
 </style>
 </head>
 <body>
-<div id="settingsPanel">
-    <h3>Settings</h3>
-    <div class="section-title">Controls</div>
-    <label><input type="checkbox" id="enableJoystick" checked> Enable joystick</label>
-    <label><input type="checkbox" id="enableArrowKeys" checked> Enable arrow keys</label>
-    <label><input type="checkbox" id="enableWASD" checked> Enable WASD</label>
-    <label><input type="checkbox" id="keyboardJoystickIndicator" checked> Arrow keys show joystick direction</label>
-    <div class="section-title">Handedness</div>
-    <label><input type="radio" name="handedness" value="right" checked> Right-handed (joystick left)</label>
-    <label><input type="radio" name="handedness" value="left"> Left-handed (joystick right)</label>
-    <div class="section-title">Content</div>
-    <label><input type="checkbox" id="enableWeapons" checked> Show handheld weapons (mature)</label>
+<div id="settingsContainer">
+    <button id="settingsToggle" aria-expanded="true" aria-controls="settingsPanel">✕</button>
+    <div id="settingsPanel">
+        <h3>Settings</h3>
+        <div class="section-title">Controls</div>
+        <label><input type="checkbox" id="enableJoystick" checked> Enable joystick</label>
+        <label><input type="checkbox" id="enableArrowKeys" checked> Enable arrow keys</label>
+        <label><input type="checkbox" id="enableWASD" checked> Enable WASD</label>
+        <label><input type="checkbox" id="keyboardJoystickIndicator" checked> Arrow keys show joystick direction</label>
+        <div class="section-title">Handedness</div>
+        <label><input type="radio" name="handedness" value="right" checked> Right-handed (joystick left)</label>
+        <label><input type="radio" name="handedness" value="left"> Left-handed (joystick right)</label>
+        <div class="section-title">Content</div>
+        <label><input type="checkbox" id="enableWeapons" checked> Show handheld weapons (mature)</label>
+    </div>
 </div>
 <canvas id="gameCanvas"></canvas>
 <canvas id="uiCanvas"></canvas>
@@ -72,8 +111,11 @@ canvas {
     const uiCanvas = document.getElementById('uiCanvas');
     const gameCtx = gameCanvas.getContext('2d');
     const uiCtx = uiCanvas.getContext('2d');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const settingsToggle = document.getElementById('settingsToggle');
     // Game state variables
     let player = { x: 100, y: 100, radius: 10, speed: 2, color: 'blue' };
+    let playerCentered = false;
     const enemies = [];
     let killCount = 0;
     let mission = 1; // 1: eliminate enemies, 2: reach zone
@@ -87,6 +129,7 @@ canvas {
         handedness: 'right',
         enableWeapons: true
     };
+    let settingsOpen = true;
     const formRefs = {
         enableJoystick: document.getElementById('enableJoystick'),
         enableArrowKeys: document.getElementById('enableArrowKeys'),
@@ -95,6 +138,17 @@ canvas {
         enableWeapons: document.getElementById('enableWeapons'),
         handednessRadios: Array.from(document.querySelectorAll('input[name="handedness"]'))
     };
+
+    function setSettingsOpen(open) {
+        settingsOpen = open;
+        settingsPanel.classList.toggle('hidden', !open);
+        settingsToggle.textContent = open ? '✕' : '⚙';
+        settingsToggle.setAttribute('aria-expanded', String(open));
+    }
+
+    function toggleSettings() {
+        setSettingsOpen(!settingsOpen);
+    }
     // Keyboard input
     const keyState = { up: false, down: false, left: false, right: false };
     // Joystick control variables
@@ -142,7 +196,12 @@ canvas {
         uiCtx.scale(dpr, dpr);
         // Recompute control positions
         setControlPositions();
-        // Keep player visible
+        // Keep player visible and center on first load
+        if(!playerCentered) {
+            player.x = window.innerWidth / 2;
+            player.y = window.innerHeight / 2;
+            playerCentered = true;
+        }
         player.x = Math.max(player.radius, Math.min(window.innerWidth - player.radius, player.x));
         player.y = Math.max(player.radius, Math.min(window.innerHeight - player.radius, player.y));
         clampEnemiesToScreen();
@@ -152,9 +211,9 @@ canvas {
     
     // Generate initial enemies
     const enemyStyles = [
-        { type: 'grunt', bodyColor: '#c0392b', headRadius: 5, bodyLength: 14, armLength: 10, legLength: 12, hatType: 'triangle', hatColor: '#1abc9c', weapon: 'gloves' },
-        { type: 'brute', bodyColor: '#8e44ad', headRadius: 6, bodyLength: 18, armLength: 12, legLength: 14, hatType: 'square', hatColor: '#2980b9', weapon: 'sword' },
-        { type: 'scout', bodyColor: '#e67e22', headRadius: 4, bodyLength: 12, armLength: 11, legLength: 16, hatType: 'pentagon', hatColor: '#16a085', weapon: 'cup' }
+        { type: 'grunt', bodyColor: '#c0392b', headRadius: 5, bodyLength: 14, armLength: 10, legLength: 12, hatType: 'triangle', hatColor: '#f1c40f', hatSizeBoost: 3, weapon: 'gloves' },
+        { type: 'brute', bodyColor: '#8e44ad', headRadius: 6, bodyLength: 18, armLength: 12, legLength: 14, hatType: 'square', hatColor: '#2980b9', hatSizeBoost: 3, weapon: 'sword' },
+        { type: 'scout', bodyColor: '#e67e22', headRadius: 4, bodyLength: 12, armLength: 11, legLength: 16, hatType: 'pentagon', hatColor: '#2ecc71', hatSizeBoost: 3, weapon: 'cup' }
     ];
 
     function pickEnemyStyle() {
@@ -308,11 +367,16 @@ canvas {
         formRefs.keyboardJoystickIndicator.addEventListener('change', syncSettingsFromUI);
         formRefs.enableWeapons.addEventListener('change', syncSettingsFromUI);
         formRefs.handednessRadios.forEach(radio => radio.addEventListener('change', syncSettingsFromUI));
+        settingsToggle.addEventListener('click', toggleSettings);
     }
 
     // Keyboard controls for desktop browsers
     window.addEventListener('keydown', function(e) {
         switch(e.key) {
+            case 'q':
+            case 'Q':
+                toggleSettings();
+                break;
             case 'ArrowUp':
                 if(!settings.enableArrowKeys) return;
                 keyState.up = true;
@@ -408,15 +472,16 @@ canvas {
     function drawHat(x, y, style) {
         gameCtx.fillStyle = style.hatColor;
         gameCtx.beginPath();
+        const hatRadius = style.headRadius + (style.hatSizeBoost || 0);
         if(style.hatType === 'triangle') {
-            gameCtx.moveTo(x, y - style.headRadius);
-            gameCtx.lineTo(x - style.headRadius, y + style.headRadius);
-            gameCtx.lineTo(x + style.headRadius, y + style.headRadius);
+            gameCtx.moveTo(x, y - hatRadius);
+            gameCtx.lineTo(x - hatRadius, y + hatRadius);
+            gameCtx.lineTo(x + hatRadius, y + hatRadius);
         } else if(style.hatType === 'square') {
-            gameCtx.rect(x - style.headRadius, y - style.headRadius, style.headRadius * 2, style.headRadius * 2);
+            gameCtx.rect(x - hatRadius, y - hatRadius, hatRadius * 2, hatRadius * 2);
         } else {
             // pentagon
-            const r = style.headRadius + 2;
+            const r = hatRadius + 2;
             for(let i = 0; i < 5; i++) {
                 const angle = (-Math.PI / 2) + (i * 2 * Math.PI / 5);
                 const px = x + Math.cos(angle) * r;
@@ -669,6 +734,7 @@ canvas {
 
     // Start the game
     setupSettingsPanel();
+    setSettingsOpen(true);
     syncSettingsFromUI();
     resizeCanvas();
     initEnemies();
