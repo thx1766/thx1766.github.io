@@ -164,6 +164,7 @@ import { createRenderer } from './render.js';
     }
 
     function gameLoop() {
+        inputSystem.updateGamepadState();
         gameplay.update();
         renderer.render();
         renderInventory();

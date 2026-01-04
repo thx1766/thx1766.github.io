@@ -14,6 +14,10 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
         attackPressed: false,
         label: 'Attack',
     };
+    const gamepadState = {
+        activeIndex: null,
+        deadzone: 0.15,
+    };
 
     function updateKeyboardJoystickIndicator() {
         if (!settings.keyboardJoystickIndicator || joystickState.joystickTouchId !== null) return;
@@ -122,6 +126,25 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
             if (e.pointerId === actionState.actionTouchId) {
                 actionState.actionTouchId = null;
                 actionState.attackPressed = false;
+            }
+        });
+    }
+
+    function attachGamepadEvents() {
+        window.addEventListener('gamepadconnected', (event) => {
+            if (gamepadState.activeIndex === null) {
+                gamepadState.activeIndex = event.gamepad.index;
+            }
+        });
+
+        window.addEventListener('gamepaddisconnected', (event) => {
+            if (event.gamepad.index === gamepadState.activeIndex) {
+                gamepadState.activeIndex = null;
+                if (joystickState.joystickTouchId === null) {
+                    joystickState.joystickActive = false;
+                    joystickState.joystickKnob.x = joystickState.joystickBase.x;
+                    joystickState.joystickKnob.y = joystickState.joystickBase.y;
+                }
             }
         });
     }
@@ -245,6 +268,56 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
     function attachInputListeners() {
         attachPointerEvents();
         attachKeyboardEvents();
+        attachGamepadEvents();
+    }
+
+    function updateGamepadState() {
+        if (!settings.enableJoystick || joystickState.joystickTouchId !== null) return;
+        if (typeof navigator.getGamepads !== 'function') return;
+
+        const pads = navigator.getGamepads();
+        let pad = null;
+
+        if (gamepadState.activeIndex !== null) {
+            pad = pads[gamepadState.activeIndex];
+        }
+
+        if (!pad) {
+            for (const candidate of pads) {
+                if (candidate && candidate.connected) {
+                    pad = candidate;
+                    gamepadState.activeIndex = candidate.index;
+                    break;
+                }
+            }
+        }
+
+        if (!pad || !pad.axes || pad.axes.length < 2) {
+            gamepadState.activeIndex = null;
+            joystickState.joystickActive = false;
+            joystickState.joystickKnob.x = joystickState.joystickBase.x;
+            joystickState.joystickKnob.y = joystickState.joystickBase.y;
+            return;
+        }
+
+        const rawX = pad.axes[0];
+        const rawY = pad.axes[1];
+        const magnitude = Math.hypot(rawX, rawY);
+
+        if (magnitude <= gamepadState.deadzone) {
+            joystickState.joystickActive = false;
+            joystickState.joystickKnob.x = joystickState.joystickBase.x;
+            joystickState.joystickKnob.y = joystickState.joystickBase.y;
+            return;
+        }
+
+        const scaledMagnitude = Math.min(1, (magnitude - gamepadState.deadzone) / (1 - gamepadState.deadzone));
+        const nx = (rawX / magnitude) * scaledMagnitude;
+        const ny = (rawY / magnitude) * scaledMagnitude;
+
+        joystickState.joystickActive = true;
+        joystickState.joystickKnob.x = joystickState.joystickBase.x + nx * joystickState.joystickRadius;
+        joystickState.joystickKnob.y = joystickState.joystickBase.y + ny * joystickState.joystickRadius;
     }
 
     return {
@@ -253,5 +326,6 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
         actionState,
         setControlPositions,
         attachInputListeners,
+        updateGamepadState,
     };
 }
