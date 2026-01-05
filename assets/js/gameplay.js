@@ -170,10 +170,11 @@ export function createGameplaySystem(settings, keyState, joystickState, lookJoys
         const lookStick = getStickVector(lookJoystickState);
         const lookMagnitude = Math.hypot(lookStick.x, lookStick.y);
         const pointerLookDelta = pointerLockState.locked ? consumePointerLookDelta() : { x: 0, y: 0 };
+        const lookTurnRate = Math.max(0.01, debugState.lookStickTurnRate ?? 0.18);
         if (activeRenderMode === '3d' && lookMagnitude > 0.08) {
             const target = Math.atan2(lookStick.y, lookStick.x);
             const delta = normalizeAngle(target - player.facing);
-            player.facing = normalizeAngle(player.facing + delta * 0.18);
+            player.facing = normalizeAngle(player.facing + delta * lookTurnRate);
         } else if (activeRenderMode === '3d' && pointerLockState.locked) {
             const { x } = pointerLookDelta;
             if (x !== 0) {

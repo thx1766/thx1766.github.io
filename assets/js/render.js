@@ -335,6 +335,8 @@ function drawFirstPersonEnemies(gameCtx, camera, player, enemies, settings) {
 
     projections.sort((a, b) => b.projected.depth - a.projected.depth);
 
+    const time = performance.now() * 0.005;
+
     projections.forEach(({ enemy, projected }) => {
         const size = enemy.size + 6;
         const height = Math.max(34, size * 4.5 * projected.scale);
@@ -353,8 +355,14 @@ function drawFirstPersonEnemies(gameCtx, camera, player, enemies, settings) {
         gameCtx.stroke();
 
         gameCtx.beginPath();
-        gameCtx.moveTo(projected.screenX - width * 3, baseY - height * 0.45);
-        gameCtx.lineTo(projected.screenX + width * 3, baseY - height * 0.45);
+        const armAnchorY = baseY - height * 0.45;
+        const swingPhase = time + enemy.x * 0.08 + enemy.y * 0.05;
+        const swingAmount = Math.sin(swingPhase) * height * 0.08;
+        const liftAmount = Math.cos(swingPhase * 1.2) * height * 0.05;
+        gameCtx.moveTo(projected.screenX, armAnchorY);
+        gameCtx.lineTo(projected.screenX - width * 3, armAnchorY + swingAmount + liftAmount);
+        gameCtx.moveTo(projected.screenX, armAnchorY);
+        gameCtx.lineTo(projected.screenX + width * 3, armAnchorY - swingAmount + liftAmount);
         gameCtx.stroke();
 
         gameCtx.beginPath();

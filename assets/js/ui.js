@@ -62,6 +62,10 @@ export function setupSettingsUI({ settingsPanel, settingsToggle, debugPanel, deb
     function syncDebugFromUI() {
         debugState.showColliders = debugRefs.showColliders.checked;
         debugState.freezeOnCollision = debugRefs.freezeOnCollision.checked;
+        debugState.lookStickCurve = parseFloat(debugRefs.lookStickCurve.value);
+        debugState.lookStickTurnRate = parseFloat(debugRefs.lookStickTurnRate.value);
+        debugRefs.lookStickCurveValue.textContent = `${debugState.lookStickCurve.toFixed(2)}x`;
+        debugRefs.lookStickTurnRateValue.textContent = debugState.lookStickTurnRate.toFixed(2);
         if (typeof onDebugChanged === 'function') {
             onDebugChanged(debugState);
         }
@@ -79,6 +83,8 @@ export function setupSettingsUI({ settingsPanel, settingsToggle, debugPanel, deb
         inventoryToggle.addEventListener('click', toggleInventory);
         debugRefs.showColliders.addEventListener('change', syncDebugFromUI);
         debugRefs.freezeOnCollision.addEventListener('change', syncDebugFromUI);
+        debugRefs.lookStickCurve.addEventListener('input', syncDebugFromUI);
+        debugRefs.lookStickTurnRate.addEventListener('input', syncDebugFromUI);
         debugRefs.skipLevel2.addEventListener('click', () => {
             if (typeof onSkipLevel2 === 'function') onSkipLevel2();
         });
