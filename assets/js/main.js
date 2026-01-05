@@ -13,6 +13,7 @@ import { createRenderer } from './render.js';
     const inventoryPanel = document.getElementById('inventoryPanel');
     const inventoryToggle = document.getElementById('inventoryToggle');
     const renderModeToggle = document.getElementById('renderModeToggle');
+    const pointerLockToggle = document.getElementById('pointerLockToggle');
     const notificationBar = document.getElementById('notificationBar');
     const creditsDisplay = document.getElementById('creditsDisplay');
     const inventoryList = document.getElementById('inventoryList');
@@ -53,8 +54,8 @@ import { createRenderer } from './render.js';
     };
 
     let uiControls;
-    const inputSystem = createInputSystem(uiCanvas, settings, () => uiControls.toggleSettings());
-    const gameplay = createGameplaySystem(settings, inputSystem.keyState, inputSystem.joystickState, inputSystem.lookJoystickState, inputSystem.actionState, debugState);
+    const inputSystem = createInputSystem(gameCanvas, uiCanvas, settings, () => uiControls.toggleSettings(), handlePointerLockChange);
+    const gameplay = createGameplaySystem(settings, inputSystem.keyState, inputSystem.joystickState, inputSystem.lookJoystickState, inputSystem.actionState, { state: inputSystem.pointerLockState, consumePointerLookDelta: inputSystem.consumePointerLookDelta }, debugState);
 
     uiControls = setupSettingsUI({
         settingsPanel,
@@ -88,6 +89,29 @@ import { createRenderer } from './render.js';
     const renderer = createRenderer(gameCanvas, uiCanvas, settings, gameplay, inputSystem.joystickState, inputSystem.lookJoystickState, inputSystem.actionState, inputSystem.setControlPositions, debugState);
 
     let inventoryCache = '';
+    let pointerLockAvailable = settings.renderMode === '3d';
+
+    function handlePointerLockChange(locked) {
+        const wants3D = (settings.pendingRenderMode || settings.renderMode) === '3d';
+        pointerLockToggle.textContent = locked ? 'Unlock Pointer' : 'Lock Pointer';
+        pointerLockToggle.setAttribute('aria-pressed', String(locked));
+        pointerLockToggle.classList.toggle('is-active', locked);
+        pointerLockToggle.title = wants3D
+            ? locked
+                ? 'Pointer locked for mouse look — press Esc or L to release'
+                : 'Lock the pointer for mouse look (press L to toggle)'
+            : 'Pointer lock is available in 3D view';
+    }
+
+    function syncPointerLockAvailability() {
+        const wants3D = (settings.pendingRenderMode || settings.renderMode) === '3d';
+        pointerLockAvailable = wants3D;
+        pointerLockToggle.disabled = !wants3D;
+        if (!wants3D && inputSystem.pointerLockState.locked) {
+            inputSystem.exitPointerLock();
+        }
+        handlePointerLockChange(inputSystem.pointerLockState.locked);
+    }
 
     function renderInventory() {
         const snapshot = gameplay.inventorySnapshot();
@@ -179,6 +203,7 @@ import { createRenderer } from './render.js';
     uiControls.syncSettingsFromUI();
     uiControls.syncDebugFromUI();
     uiControls.setRenderTransitioning(false);
+    syncPointerLockAvailability();
     inputSystem.setControlPositions();
     inputSystem.attachInputListeners();
     gameplay.initEnemies();
@@ -201,6 +226,7 @@ import { createRenderer } from './render.js';
             uiControls.setRenderMode(appliedMode);
             uiControls.setRenderTransitioning(false);
             localStorage.setItem('renderModePreference', appliedMode);
+            syncPointerLockAvailability();
             if (appliedMode === '2d') {
                 const lookStick = inputSystem.lookJoystickState;
                 lookStick.joystickTouchId = null;
@@ -210,4 +236,9 @@ import { createRenderer } from './render.js';
             }
         });
     }
+
+    pointerLockToggle.addEventListener('click', () => {
+        if (!pointerLockAvailable) return;
+        inputSystem.togglePointerLock();
+    });
 })();

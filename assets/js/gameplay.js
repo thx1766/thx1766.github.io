@@ -25,9 +25,10 @@ function rectDistance(px, py, rect) {
     return Math.hypot(px - cx, py - cy);
 }
 
-export function createGameplaySystem(settings, keyState, joystickState, lookJoystickState, actionState, debugState = {}) {
+export function createGameplaySystem(settings, keyState, joystickState, lookJoystickState, actionState, pointerLook = {}, debugState = {}) {
     debugState.showColliders = Boolean(debugState.showColliders);
     debugState.freezeOnCollision = debugState.freezeOnCollision !== false;
+    const { consumePointerLookDelta = () => ({ x: 0, y: 0 }), state: pointerLockState = { locked: false, sensitivity: 0.0035 } } = pointerLook;
     const player = { x: 100, y: 100, radius: 10, speed: 2, color: 'blue', facing: -Math.PI / 2 };
     const enemies = [];
     const enemyStyles = createEnemyStyles();
@@ -168,10 +169,17 @@ export function createGameplaySystem(settings, keyState, joystickState, lookJoys
 
         const lookStick = getStickVector(lookJoystickState);
         const lookMagnitude = Math.hypot(lookStick.x, lookStick.y);
+        const pointerLookDelta = pointerLockState.locked ? consumePointerLookDelta() : { x: 0, y: 0 };
         if (activeRenderMode === '3d' && lookMagnitude > 0.08) {
             const target = Math.atan2(lookStick.y, lookStick.x);
             const delta = normalizeAngle(target - player.facing);
             player.facing = normalizeAngle(player.facing + delta * 0.18);
+        } else if (activeRenderMode === '3d' && pointerLockState.locked) {
+            const { x } = pointerLookDelta;
+            if (x !== 0) {
+                const spin = x * (pointerLockState.sensitivity || 0.0035);
+                player.facing = normalizeAngle(player.facing + spin);
+            }
         } else if (hasMoveInput) {
             const nx = dx / length;
             const ny = dy / length;

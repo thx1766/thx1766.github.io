@@ -1,4 +1,4 @@
-export function createInputSystem(uiCanvas, settings, toggleSettings) {
+export function createInputSystem(gameCanvas, uiCanvas, settings, toggleSettings, onPointerLockChange) {
     const keyState = { up: false, down: false, left: false, right: false };
     const joystickState = {
         joystickTouchId: null,
@@ -24,6 +24,12 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
     const gamepadState = {
         activeIndex: null,
         deadzone: 0.15,
+    };
+    const pointerLockState = {
+        locked: false,
+        pendingDx: 0,
+        pendingDy: 0,
+        sensitivity: 0.0035,
     };
 
     function updateKeyboardJoystickIndicator() {
@@ -69,6 +75,50 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
         actionState.actionButton.y = window.innerHeight - actionOffset;
         joystickState.joystickKnob.x = joystickState.joystickBase.x;
         joystickState.joystickKnob.y = joystickState.joystickBase.y;
+    }
+
+    function handlePointerLockChange() {
+        pointerLockState.locked = document.pointerLockElement === gameCanvas;
+        if (!pointerLockState.locked) {
+            pointerLockState.pendingDx = 0;
+            pointerLockState.pendingDy = 0;
+        }
+        if (typeof onPointerLockChange === 'function') {
+            onPointerLockChange(pointerLockState.locked);
+        }
+    }
+
+    function requestPointerLock() {
+        if ((settings.pendingRenderMode || settings.renderMode) !== '3d') return false;
+        if (document.pointerLockElement === gameCanvas) return true;
+        if (typeof gameCanvas.requestPointerLock === 'function') {
+            pointerLockState.pendingDx = 0;
+            pointerLockState.pendingDy = 0;
+            gameCanvas.requestPointerLock();
+            return true;
+        }
+        return false;
+    }
+
+    function exitPointerLock() {
+        if (document.pointerLockElement) {
+            document.exitPointerLock();
+        }
+    }
+
+    function togglePointerLock() {
+        if (pointerLockState.locked) {
+            exitPointerLock();
+        } else {
+            requestPointerLock();
+        }
+    }
+
+    function consumePointerLookDelta() {
+        const delta = { x: pointerLockState.pendingDx, y: pointerLockState.pendingDy };
+        pointerLockState.pendingDx = 0;
+        pointerLockState.pendingDy = 0;
+        return delta;
     }
 
     function attachPointerEvents() {
@@ -176,6 +226,16 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
         });
     }
 
+    function attachPointerLockEvents() {
+        document.addEventListener('pointerlockchange', handlePointerLockChange);
+        document.addEventListener('pointerlockerror', handlePointerLockChange);
+        gameCanvas.addEventListener('mousemove', (e) => {
+            if (!pointerLockState.locked) return;
+            pointerLockState.pendingDx += e.movementX;
+            pointerLockState.pendingDy += e.movementY;
+        });
+    }
+
     function attachGamepadEvents() {
         window.addEventListener('gamepadconnected', (event) => {
             if (gamepadState.activeIndex === null) {
@@ -249,6 +309,12 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
                 case ' ':
                     actionState.attackPressed = true;
                     break;
+                case 'l':
+                case 'L':
+                    if ((settings.pendingRenderMode || settings.renderMode) === '3d') {
+                        togglePointerLock();
+                    }
+                    break;
                 default:
                     return;
             }
@@ -315,6 +381,7 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
         attachPointerEvents();
         attachKeyboardEvents();
         attachGamepadEvents();
+        attachPointerLockEvents();
     }
 
     function updateGamepadState() {
@@ -376,8 +443,13 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
         joystickState,
         lookJoystickState,
         actionState,
+        pointerLockState,
         setControlPositions,
         attachInputListeners,
         updateGamepadState,
+        consumePointerLookDelta,
+        requestPointerLock,
+        exitPointerLock,
+        togglePointerLock,
     };
 }
