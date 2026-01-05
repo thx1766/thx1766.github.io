@@ -25,10 +25,10 @@ function rectDistance(px, py, rect) {
     return Math.hypot(px - cx, py - cy);
 }
 
-export function createGameplaySystem(settings, keyState, joystickState, actionState, debugState = {}) {
+export function createGameplaySystem(settings, keyState, joystickState, lookJoystickState, actionState, debugState = {}) {
     debugState.showColliders = Boolean(debugState.showColliders);
     debugState.freezeOnCollision = debugState.freezeOnCollision !== false;
-    const player = { x: 100, y: 100, radius: 10, speed: 2, color: 'blue' };
+    const player = { x: 100, y: 100, radius: 10, speed: 2, color: 'blue', facing: -Math.PI / 2 };
     const enemies = [];
     const enemyStyles = createEnemyStyles();
     let playerCentered = false;
@@ -122,24 +122,60 @@ export function createGameplaySystem(settings, keyState, joystickState, actionSt
         player.y = Math.max(player.radius, Math.min(window.innerHeight - player.radius, player.y));
     }
 
+    function getStickVector(stick) {
+        if (!stick || !stick.joystickActive) return { x: 0, y: 0 };
+        const dx = (stick.joystickKnob.x - stick.joystickBase.x) / stick.joystickRadius;
+        const dy = (stick.joystickKnob.y - stick.joystickBase.y) / stick.joystickRadius;
+        return { x: dx, y: dy };
+    }
+
+    function normalizeAngle(angle) {
+        const twoPi = Math.PI * 2;
+        let a = angle % twoPi;
+        if (a < -Math.PI) a += twoPi;
+        if (a > Math.PI) a -= twoPi;
+        return a;
+    }
+
     function updatePlayerMovement() {
+        const activeRenderMode = settings.pendingRenderMode || settings.renderMode;
         let dx = 0, dy = 0;
         if (keyState.up) dy -= 1;
         if (keyState.down) dy += 1;
         if (keyState.left) dx -= 1;
         if (keyState.right) dx += 1;
 
-        if (joystickState.joystickActive) {
-            dx += (joystickState.joystickKnob.x - joystickState.joystickBase.x) / joystickState.joystickRadius;
-            dy += (joystickState.joystickKnob.y - joystickState.joystickBase.y) / joystickState.joystickRadius;
-        }
+        const moveStick = getStickVector(joystickState);
+        dx += moveStick.x;
+        dy += moveStick.y;
 
         const length = Math.sqrt(dx * dx + dy * dy);
-        if (length > 0) {
-            dx = dx / length;
-            dy = dy / length;
-            player.x += dx * player.speed * joystickState.maxSpeed;
-            player.y += dy * player.speed * joystickState.maxSpeed;
+        const hasMoveInput = length > 0.001;
+
+        if (activeRenderMode === '3d') {
+            const forward = hasMoveInput ? -dy / length : 0;
+            const strafe = hasMoveInput ? dx / length : 0;
+            const cos = Math.cos(player.facing);
+            const sin = Math.sin(player.facing);
+            player.x += (strafe * cos - forward * sin) * player.speed * joystickState.maxSpeed;
+            player.y += (strafe * sin + forward * cos) * player.speed * joystickState.maxSpeed;
+        } else if (hasMoveInput) {
+            const nx = dx / length;
+            const ny = dy / length;
+            player.x += nx * player.speed * joystickState.maxSpeed;
+            player.y += ny * player.speed * joystickState.maxSpeed;
+        }
+
+        const lookStick = getStickVector(lookJoystickState);
+        const lookMagnitude = Math.hypot(lookStick.x, lookStick.y);
+        if (activeRenderMode === '3d' && lookMagnitude > 0.08) {
+            const target = Math.atan2(lookStick.y, lookStick.x);
+            const delta = normalizeAngle(target - player.facing);
+            player.facing = normalizeAngle(player.facing + delta * 0.18);
+        } else if (hasMoveInput) {
+            const nx = dx / length;
+            const ny = dy / length;
+            player.facing = Math.atan2(ny, nx);
         }
 
         player.x = Math.max(player.radius, Math.min(window.innerWidth - player.radius, player.x));

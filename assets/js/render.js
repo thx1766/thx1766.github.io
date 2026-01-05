@@ -153,6 +153,20 @@ function drawPlayer2D(gameCtx, player) {
     gameCtx.moveTo(player.x, player.y + 5);
     gameCtx.lineTo(player.x + 5, player.y + 15);
     gameCtx.stroke();
+
+    const dirX = Math.cos(player.facing);
+    const dirY = Math.sin(player.facing);
+    const indicatorStartY = player.y - 6;
+    const indicatorLength = 20;
+    const tipX = player.x + dirX * indicatorLength;
+    const tipY = indicatorStartY + dirY * indicatorLength;
+    gameCtx.fillStyle = 'rgba(52, 152, 219, 0.85)';
+    gameCtx.beginPath();
+    gameCtx.moveTo(tipX, tipY);
+    gameCtx.lineTo(tipX - dirY * 5, tipY + dirX * 5);
+    gameCtx.lineTo(tipX + dirY * 5, tipY - dirX * 5);
+    gameCtx.closePath();
+    gameCtx.fill();
 }
 
 function drawEnemies2D(gameCtx, enemies, settings) {
@@ -229,133 +243,240 @@ function draw2DScene(gameCtx, state, settings, debugState, viewport) {
     drawMissionText(gameCtx, mission, killCount, extractionReady);
 }
 
-function drawContainment3D(gameCtx, level2State) {
-    const { containment, walls, charges, planted } = level2State;
-    gameCtx.save();
-    gameCtx.strokeStyle = 'rgba(39, 174, 96, 0.9)';
-    gameCtx.lineWidth = 4;
-    gameCtx.strokeRect(containment.x, containment.y, containment.size, containment.size);
-    gameCtx.fillStyle = 'rgba(39, 174, 96, 0.08)';
-    gameCtx.fillRect(containment.x, containment.y, containment.size, containment.size);
-
-    walls.forEach(wall => {
-        const fill = wall.destroyed ? 'rgba(236, 240, 241, 0.45)' : 'rgba(52, 73, 94, 0.95)';
-        gameCtx.fillStyle = fill;
-        gameCtx.shadowColor = 'rgba(0,0,0,0.25)';
-        gameCtx.shadowBlur = wall.destroyed ? 2 : 6;
-        gameCtx.fillRect(wall.x, wall.y, wall.width, wall.height);
-    });
-
-    charges.forEach(charge => {
-        const gradient = gameCtx.createRadialGradient(charge.x, charge.y, 2, charge.x, charge.y, 14);
-        gradient.addColorStop(0, 'rgba(255, 195, 113, 0.9)');
-        gradient.addColorStop(1, 'rgba(243, 156, 18, 0.15)');
-        gameCtx.fillStyle = gradient;
-        gameCtx.beginPath();
-        gameCtx.arc(charge.x, charge.y, 12, 0, Math.PI * 2);
-        gameCtx.fill();
-    });
-
-    planted.forEach(charge => {
-        const gradient = gameCtx.createRadialGradient(charge.x, charge.y, 2, charge.x, charge.y, charge.radius);
-        gradient.addColorStop(0, 'rgba(231, 76, 60, 0.8)');
-        gradient.addColorStop(1, 'rgba(231, 76, 60, 0)');
-        gameCtx.fillStyle = gradient;
-        gameCtx.beginPath();
-        gameCtx.arc(charge.x, charge.y, charge.radius, 0, Math.PI * 2);
-        gameCtx.fill();
-        gameCtx.fillStyle = '#c0392b';
-        gameCtx.beginPath();
-        gameCtx.arc(charge.x, charge.y, 12, 0, Math.PI * 2);
-        gameCtx.fill();
-    });
-
-    gameCtx.restore();
-}
-
-function draw3DCharacters(gameCtx, player, enemies, settings) {
-    gameCtx.save();
-    gameCtx.shadowColor = 'rgba(0,0,0,0.25)';
-    gameCtx.shadowBlur = 8;
-
-    const drawCharacter = (x, y, color, size) => {
-        const gradient = gameCtx.createLinearGradient(x, y - size, x, y + size);
-        gradient.addColorStop(0, '#ecf0f1');
-        gradient.addColorStop(1, color);
-        gameCtx.fillStyle = gradient;
-        gameCtx.beginPath();
-        gameCtx.ellipse(x, y, size * 0.8, size, 0, 0, Math.PI * 2);
-        gameCtx.fill();
-    };
-
-    enemies.forEach(enemy => {
-        drawCharacter(enemy.x, enemy.y, enemy.style.bodyColor, enemy.size + 6);
-        if (settings.enableWeapons) {
-            gameCtx.fillStyle = 'rgba(0,0,0,0.4)';
-            const offset = enemy.hand === 'left' ? -enemy.style.armLength : enemy.style.armLength;
-            gameCtx.fillRect(enemy.x + offset - 4, enemy.y - 6, 8, 16);
-        }
-    });
-
-    drawCharacter(player.x, player.y, '#3498db', player.radius + 12);
-
-    gameCtx.restore();
-}
-
-function draw3DGround(gameCtx, viewport) {
-    const horizon = viewport.height * 0.35;
+function drawSkyAndGround(gameCtx, camera, viewport) {
     const gradient = gameCtx.createLinearGradient(0, 0, 0, viewport.height);
-    gradient.addColorStop(0, '#dfe6e9');
-    gradient.addColorStop(1, '#bdc3c7');
+    gradient.addColorStop(0, '#dde8f3');
+    gradient.addColorStop(Math.max(0.05, camera.horizon / viewport.height - 0.08), '#d7e2ee');
+    gradient.addColorStop(1, '#9aa7b4');
     gameCtx.fillStyle = gradient;
     gameCtx.fillRect(0, 0, viewport.width, viewport.height);
 
+    const groundGradient = gameCtx.createLinearGradient(0, camera.horizon, 0, viewport.height);
+    groundGradient.addColorStop(0, 'rgba(52, 73, 94, 0.2)');
+    groundGradient.addColorStop(1, 'rgba(52, 73, 94, 0.05)');
+    gameCtx.fillStyle = groundGradient;
+    gameCtx.fillRect(0, camera.horizon, viewport.width, viewport.height - camera.horizon);
+
     gameCtx.save();
-    gameCtx.strokeStyle = 'rgba(52, 73, 94, 0.3)';
-    for (let i = 0; i < 12; i++) {
-        const depth = i / 12;
-        const y = horizon + depth * (viewport.height - horizon);
+    gameCtx.strokeStyle = 'rgba(44, 62, 80, 0.3)';
+    const vanishingLines = 14;
+    for (let i = -vanishingLines; i <= vanishingLines; i++) {
+        const angle = i * 0.04;
+        gameCtx.beginPath();
+        gameCtx.moveTo(viewport.width / 2, camera.horizon);
+        gameCtx.lineTo((viewport.width / 2) + Math.tan(angle) * viewport.height, viewport.height);
+        gameCtx.stroke();
+    }
+    const depthLines = 12;
+    for (let i = 0; i < depthLines; i++) {
+        const depth = i / depthLines;
+        const y = camera.horizon + depth * (viewport.height - camera.horizon);
         const spread = 120 + depth * viewport.width * 0.6;
         gameCtx.beginPath();
         gameCtx.moveTo((viewport.width / 2) - spread, y);
         gameCtx.lineTo((viewport.width / 2) + spread, y);
         gameCtx.stroke();
     }
-    for (let i = -6; i <= 6; i++) {
-        const angleSpread = i * 0.08;
-        gameCtx.beginPath();
-        gameCtx.moveTo(viewport.width / 2, horizon - 20);
-        gameCtx.lineTo((viewport.width / 2) + Math.tan(angleSpread) * viewport.height, viewport.height);
-        gameCtx.stroke();
-    }
     gameCtx.restore();
 }
 
-function draw3DScene(gameCtx, state, settings, debugState, viewport) {
+function buildCamera(player, viewport, introLerp = 1) {
+    const clamped = Math.min(1, Math.max(0, introLerp));
+    const horizon = viewport.height * (0.42 - 0.07 * (1 - clamped));
+    const eyeHeight = 46 + 60 * (1 - clamped * 0.6);
+    const viewDistance = 520;
+    return { horizon, eyeHeight, viewDistance, facing: player.facing, viewportWidth: viewport.width, viewportHeight: viewport.height };
+}
+
+function rotateToView(dx, dy, facing) {
+    const cos = Math.cos(-facing);
+    const sin = Math.sin(-facing);
+    return { x: dx * cos - dy * sin, y: dx * sin + dy * cos };
+}
+
+function projectToScreen(rotated, camera) {
+    const depth = rotated.y + 40;
+    if (depth <= 12) return null;
+    const scale = camera.viewDistance / depth;
+    const screenX = camera.viewportWidth / 2 + rotated.x * scale;
+    const groundY = camera.horizon + camera.eyeHeight * scale;
+    return { screenX, groundY, scale, depth };
+}
+
+function drawFirstPersonTargets(gameCtx, camera, targetZone, player) {
+    const centerX = targetZone.x + targetZone.size / 2;
+    const centerY = targetZone.y + targetZone.size / 2;
+    const rotated = rotateToView(centerX - player.x, centerY - player.y, camera.facing);
+    const projected = projectToScreen(rotated, camera);
+    if (!projected) return;
+    const columnHeight = Math.max(30, 140 * projected.scale);
+    const columnWidth = Math.max(6, 18 * projected.scale);
+    const baseY = projected.groundY;
+    const topY = baseY - columnHeight;
+    gameCtx.save();
+    gameCtx.strokeStyle = 'rgba(39, 174, 96, 0.9)';
+    gameCtx.fillStyle = 'rgba(39, 174, 96, 0.3)';
+    gameCtx.lineWidth = Math.max(2, 4 * projected.scale);
+    gameCtx.beginPath();
+    gameCtx.rect(projected.screenX - columnWidth / 2, topY, columnWidth, columnHeight);
+    gameCtx.stroke();
+    gameCtx.fill();
+    gameCtx.restore();
+}
+
+function drawFirstPersonEnemies(gameCtx, camera, player, enemies, settings) {
+    const projections = [];
+    enemies.forEach(enemy => {
+        const rotated = rotateToView(enemy.x - player.x, enemy.y - player.y, camera.facing);
+        const projected = projectToScreen(rotated, camera);
+        if (!projected || projected.depth > 1200) return;
+        projections.push({ enemy, projected });
+    });
+
+    projections.sort((a, b) => b.projected.depth - a.projected.depth);
+
+    projections.forEach(({ enemy, projected }) => {
+        const size = enemy.size + 6;
+        const height = Math.max(34, size * 4.5 * projected.scale);
+        const baseY = projected.groundY;
+        const topY = baseY - height;
+        const width = Math.max(3, size * 0.6 * projected.scale);
+        const headRadius = Math.max(4, enemy.style.headRadius * projected.scale * 0.9);
+        gameCtx.save();
+        gameCtx.strokeStyle = enemy.style.bodyColor;
+        gameCtx.fillStyle = enemy.style.bodyColor;
+        gameCtx.lineWidth = Math.max(2, 3 * projected.scale);
+
+        gameCtx.beginPath();
+        gameCtx.moveTo(projected.screenX, topY + headRadius * 2);
+        gameCtx.lineTo(projected.screenX, baseY - headRadius);
+        gameCtx.stroke();
+
+        gameCtx.beginPath();
+        gameCtx.moveTo(projected.screenX - width * 3, baseY - height * 0.45);
+        gameCtx.lineTo(projected.screenX + width * 3, baseY - height * 0.45);
+        gameCtx.stroke();
+
+        gameCtx.beginPath();
+        gameCtx.moveTo(projected.screenX, baseY - height * 0.2);
+        gameCtx.lineTo(projected.screenX - width * 2, baseY);
+        gameCtx.moveTo(projected.screenX, baseY - height * 0.2);
+        gameCtx.lineTo(projected.screenX + width * 2, baseY);
+        gameCtx.stroke();
+
+        gameCtx.beginPath();
+        gameCtx.arc(projected.screenX, topY + headRadius, headRadius, 0, Math.PI * 2);
+        gameCtx.fill();
+        drawHat(gameCtx, projected.screenX, topY, { ...enemy.style, headRadius: headRadius * 0.8 });
+
+        if (settings.enableWeapons) {
+            gameCtx.fillStyle = 'rgba(0,0,0,0.35)';
+            const offset = enemy.hand === 'left' ? -enemy.style.armLength : enemy.style.armLength;
+            const scaledOffset = offset * projected.scale * 0.5;
+            gameCtx.fillRect(projected.screenX + scaledOffset - width, baseY - height * 0.5, width * 2, width * 4);
+        }
+        gameCtx.restore();
+    });
+}
+
+function drawContainmentColumns(gameCtx, camera, level2State, player) {
+    const { containment, walls, charges, planted } = level2State;
+    const anchors = [
+        { x: containment.x, y: containment.y },
+        { x: containment.x + containment.size, y: containment.y },
+        { x: containment.x, y: containment.y + containment.size },
+        { x: containment.x + containment.size, y: containment.y + containment.size },
+    ];
+    gameCtx.save();
+    gameCtx.strokeStyle = 'rgba(39, 174, 96, 0.45)';
+    anchors.forEach(anchor => {
+        const rotated = rotateToView(anchor.x - player.x, anchor.y - player.y, camera.facing);
+        const projected = projectToScreen(rotated, camera);
+        if (!projected) return;
+        const height = Math.max(18, 120 * projected.scale);
+        gameCtx.lineWidth = Math.max(1.5, 3 * projected.scale);
+        gameCtx.beginPath();
+        gameCtx.moveTo(projected.screenX, projected.groundY);
+        gameCtx.lineTo(projected.screenX, projected.groundY - height);
+        gameCtx.stroke();
+    });
+    gameCtx.restore();
+
+    charges.forEach(charge => {
+        const rotated = rotateToView(charge.x - player.x, charge.y - player.y, camera.facing);
+        const projected = projectToScreen(rotated, camera);
+        if (!projected) return;
+        const radius = Math.max(5, 12 * projected.scale);
+        const glow = radius * 4;
+        const gradient = gameCtx.createRadialGradient(projected.screenX, projected.groundY - radius, 2, projected.screenX, projected.groundY - radius, glow);
+        gradient.addColorStop(0, 'rgba(255, 195, 113, 0.9)');
+        gradient.addColorStop(1, 'rgba(243, 156, 18, 0.05)');
+        gameCtx.fillStyle = gradient;
+        gameCtx.beginPath();
+        gameCtx.arc(projected.screenX, projected.groundY - radius, radius, 0, Math.PI * 2);
+        gameCtx.fill();
+    });
+
+    planted.forEach(charge => {
+        const rotated = rotateToView(charge.x - player.x, charge.y - player.y, camera.facing);
+        const projected = projectToScreen(rotated, camera);
+        if (!projected) return;
+        const radius = Math.max(8, 14 * projected.scale);
+        const blast = charge.radius * projected.scale * 0.45;
+        const gradient = gameCtx.createRadialGradient(projected.screenX, projected.groundY - radius, 2, projected.screenX, projected.groundY - radius, blast);
+        gradient.addColorStop(0, 'rgba(231, 76, 60, 0.55)');
+        gradient.addColorStop(1, 'rgba(231, 76, 60, 0.05)');
+        gameCtx.fillStyle = gradient;
+        gameCtx.beginPath();
+        gameCtx.arc(projected.screenX, projected.groundY - radius, blast, 0, Math.PI * 2);
+        gameCtx.fill();
+    });
+}
+
+function drawReticle(gameCtx, viewport) {
+    const cx = viewport.width / 2;
+    const cy = viewport.height * 0.52;
+    gameCtx.save();
+    gameCtx.strokeStyle = 'rgba(52, 73, 94, 0.7)';
+    gameCtx.lineWidth = 2;
+    gameCtx.beginPath();
+    gameCtx.arc(cx, cy, 14, 0, Math.PI * 2);
+    gameCtx.stroke();
+    gameCtx.beginPath();
+    gameCtx.moveTo(cx - 16, cy);
+    gameCtx.lineTo(cx + 16, cy);
+    gameCtx.moveTo(cx, cy - 16);
+    gameCtx.lineTo(cx, cy + 16);
+    gameCtx.stroke();
+    gameCtx.restore();
+}
+
+function draw3DScene(gameCtx, state, settings, debugState, viewport, introLerp = 1) {
     const { player, enemies, missionState } = state;
     const { mission, killCount, targetZone, level2State, extractionReady } = missionState();
-    gameCtx.setTransform(1, 0, -0.08, 1, viewport.width * 0.08, 0);
-    draw3DGround(gameCtx, viewport);
+    gameCtx.clearRect(0, 0, viewport.width, viewport.height);
+    const camera = buildCamera(player, viewport, introLerp);
+    drawSkyAndGround(gameCtx, camera, viewport);
 
     if ((mission === 1 && extractionReady) || mission === 3) {
-        drawTargetZone(gameCtx, targetZone, true);
+        drawFirstPersonTargets(gameCtx, camera, targetZone, player);
     }
 
     if (mission === 2 || mission === 3) {
-        drawContainment3D(gameCtx, level2State);
+        drawContainmentColumns(gameCtx, camera, level2State, player);
     }
 
-    draw3DCharacters(gameCtx, player, enemies, settings);
+    drawFirstPersonEnemies(gameCtx, camera, player, enemies, settings);
+    drawReticle(gameCtx, viewport);
 
     if (debugState.showColliders) {
         drawDebugColliders(gameCtx, player, enemies);
     }
 
-    gameCtx.setTransform(1, 0, 0, 1, 0, 0);
     drawMissionText(gameCtx, mission, killCount, extractionReady);
 }
 
-function drawUI(uiCtx, joystickState, actionState, settings, viewport) {
+function drawUI(uiCtx, joystickState, lookJoystickState, actionState, settings, viewport) {
     uiCtx.clearRect(0, 0, viewport.width, viewport.height);
     uiCtx.globalAlpha = settings.enableJoystick ? 0.5 : 0.2;
     uiCtx.beginPath();
@@ -367,6 +488,19 @@ function drawUI(uiCtx, joystickState, actionState, settings, viewport) {
     uiCtx.arc(joystickState.joystickKnob.x, joystickState.joystickKnob.y, 20, 0, Math.PI * 2);
     uiCtx.fillStyle = '#444';
     uiCtx.fill();
+    const wants3D = (settings.pendingRenderMode || settings.renderMode) === '3d';
+    if (wants3D) {
+        uiCtx.globalAlpha = 0.5;
+        uiCtx.beginPath();
+        uiCtx.arc(lookJoystickState.joystickBase.x, lookJoystickState.joystickBase.y, lookJoystickState.joystickRadius, 0, Math.PI * 2);
+        uiCtx.fillStyle = '#6c7a89';
+        uiCtx.fill();
+        uiCtx.globalAlpha = 1.0;
+        uiCtx.beginPath();
+        uiCtx.arc(lookJoystickState.joystickKnob.x, lookJoystickState.joystickKnob.y, 18, 0, Math.PI * 2);
+        uiCtx.fillStyle = '#2c3e50';
+        uiCtx.fill();
+    }
     uiCtx.globalAlpha = actionState.actionTouchId ? 0.7 : 0.5;
     uiCtx.beginPath();
     uiCtx.arc(actionState.actionButton.x, actionState.actionButton.y, actionState.actionButton.radius, 0, Math.PI * 2);
@@ -380,7 +514,19 @@ function drawUI(uiCtx, joystickState, actionState, settings, viewport) {
     uiCtx.fillText(actionState.label || 'Attack', actionState.actionButton.x, actionState.actionButton.y + 5);
 }
 
-export function createRenderer(gameCanvas, uiCanvas, settings, state, joystickState, actionState, setControlPositions, debugState) {
+function drawTiltedBuffer(gameCtx, buffer, viewport, tiltAmount, alpha = 1) {
+    const lift = viewport.height * 0.18 * tiltAmount;
+    const squash = 1 - 0.5 * tiltAmount;
+    const shear = tiltAmount * 0.08;
+    gameCtx.save();
+    gameCtx.globalAlpha = alpha;
+    gameCtx.translate(viewport.width / 2, viewport.height / 2 + lift);
+    gameCtx.transform(1, shear, 0, squash, 0, 0);
+    gameCtx.drawImage(buffer, -viewport.width / 2, -viewport.height / 2, viewport.width, viewport.height);
+    gameCtx.restore();
+}
+
+export function createRenderer(gameCanvas, uiCanvas, settings, state, joystickState, lookJoystickState, actionState, setControlPositions, debugState) {
     const gameCtx = gameCanvas.getContext('2d');
     const uiCtx = uiCanvas.getContext('2d');
     const scenes = { '2d': createBufferCanvas(), '3d': createBufferCanvas() };
@@ -424,19 +570,25 @@ export function createRenderer(gameCanvas, uiCanvas, settings, state, joystickSt
 
     function render() {
         const viewport = getViewport();
+        const now = performance.now();
+        const transitionProgress = transition ? Math.min(1, (now - transition.start) / transition.duration) : 1;
+        const transitionTilt = transition
+            ? (transition.to === '3d' ? transitionProgress : 1 - transitionProgress)
+            : 1;
+
         draw2DScene(scenes['2d'].ctx, state, settings, debugState, viewport);
-        draw3DScene(scenes['3d'].ctx, state, settings, debugState, viewport);
+        draw3DScene(scenes['3d'].ctx, state, settings, debugState, viewport, transitionTilt);
 
         gameCtx.clearRect(0, 0, viewport.width, viewport.height);
         if (transition) {
-            const now = performance.now();
-            const elapsed = now - transition.start;
-            const t = Math.min(1, elapsed / transition.duration);
-            gameCtx.globalAlpha = 1 - t;
-            gameCtx.drawImage(scenes[transition.from].canvas, 0, 0, viewport.width, viewport.height);
-            gameCtx.globalAlpha = t;
-            gameCtx.drawImage(scenes[transition.to].canvas, 0, 0, viewport.width, viewport.height);
-            gameCtx.globalAlpha = 1;
+            const t = transitionProgress;
+            const tilt = transition.to === '3d' ? t : 1 - t;
+            const fadeIn = transition.to === '3d' ? Math.pow(t, 0.9) : 1 - Math.pow(1 - t, 0.9);
+            const fadeOut = 1 - fadeIn * 0.7;
+
+            drawTiltedBuffer(gameCtx, scenes['2d'].canvas, viewport, tilt, Math.max(0.15, fadeOut));
+            drawTiltedBuffer(gameCtx, scenes['3d'].canvas, viewport, Math.max(0, tilt - 0.18), fadeIn);
+
             if (t >= 1) {
                 currentMode = transition.to;
                 settings.renderMode = currentMode;
@@ -449,7 +601,7 @@ export function createRenderer(gameCanvas, uiCanvas, settings, state, joystickSt
             gameCtx.drawImage(scenes[currentMode].canvas, 0, 0, viewport.width, viewport.height);
         }
 
-        drawUI(uiCtx, joystickState, actionState, settings, viewport);
+        drawUI(uiCtx, joystickState, lookJoystickState, actionState, settings, viewport);
     }
 
     return {
