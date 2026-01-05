@@ -8,6 +8,13 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
         maxSpeed: 3,
         joystickActive: false,
     };
+    const lookJoystickState = {
+        joystickTouchId: null,
+        joystickBase: { x: 0, y: 0 },
+        joystickRadius: 48,
+        joystickKnob: { x: 0, y: 0 },
+        joystickActive: false,
+    };
     const actionState = {
         actionTouchId: null,
         actionButton: { x: 0, y: 0, radius: 30 },
@@ -44,15 +51,21 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
 
     function setControlPositions() {
         const joystickOffset = 80;
-        const actionOffset = 80;
+        const secondaryOffset = 92;
+        const actionOffset = 140;
         if (settings.handedness === 'right') {
             joystickState.joystickBase.x = joystickOffset;
-            actionState.actionButton.x = window.innerWidth - actionOffset;
+            lookJoystickState.joystickBase.x = window.innerWidth - secondaryOffset;
+            actionState.actionButton.x = lookJoystickState.joystickBase.x;
         } else {
             joystickState.joystickBase.x = window.innerWidth - joystickOffset;
-            actionState.actionButton.x = actionOffset;
+            lookJoystickState.joystickBase.x = secondaryOffset;
+            actionState.actionButton.x = joystickState.joystickBase.x;
         }
         joystickState.joystickBase.y = window.innerHeight - joystickOffset;
+        lookJoystickState.joystickBase.y = window.innerHeight - secondaryOffset;
+        lookJoystickState.joystickKnob.x = lookJoystickState.joystickBase.x;
+        lookJoystickState.joystickKnob.y = lookJoystickState.joystickBase.y;
         actionState.actionButton.y = window.innerHeight - actionOffset;
         joystickState.joystickKnob.x = joystickState.joystickBase.x;
         joystickState.joystickKnob.y = joystickState.joystickBase.y;
@@ -66,11 +79,20 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
             const py = e.clientY - rect.top;
             const dx = px - joystickState.joystickBase.x;
             const dy = py - joystickState.joystickBase.y;
+            const wants3D = (settings.pendingRenderMode || settings.renderMode) === '3d';
             if (settings.enableJoystick && joystickState.joystickTouchId === null && dx * dx + dy * dy <= joystickState.joystickRadius * joystickState.joystickRadius) {
                 joystickState.joystickTouchId = e.pointerId;
                 joystickState.joystickActive = true;
                 joystickState.joystickKnob.x = px;
                 joystickState.joystickKnob.y = py;
+            }
+            const ldx = px - lookJoystickState.joystickBase.x;
+            const ldy = py - lookJoystickState.joystickBase.y;
+            if (wants3D && lookJoystickState.joystickTouchId === null && ldx * ldx + ldy * ldy <= lookJoystickState.joystickRadius * lookJoystickState.joystickRadius) {
+                lookJoystickState.joystickTouchId = e.pointerId;
+                lookJoystickState.joystickActive = true;
+                lookJoystickState.joystickKnob.x = px;
+                lookJoystickState.joystickKnob.y = py;
             }
             const dax = px - actionState.actionButton.x;
             const day = py - actionState.actionButton.y;
@@ -97,6 +119,18 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
                     joystickState.joystickKnob.y = py;
                 }
             }
+            if (lookJoystickState.joystickTouchId === e.pointerId) {
+                const dx = px - lookJoystickState.joystickBase.x;
+                const dy = py - lookJoystickState.joystickBase.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > lookJoystickState.joystickRadius) {
+                    lookJoystickState.joystickKnob.x = lookJoystickState.joystickBase.x + (dx / dist) * lookJoystickState.joystickRadius;
+                    lookJoystickState.joystickKnob.y = lookJoystickState.joystickBase.y + (dy / dist) * lookJoystickState.joystickRadius;
+                } else {
+                    lookJoystickState.joystickKnob.x = px;
+                    lookJoystickState.joystickKnob.y = py;
+                }
+            }
             if (actionState.actionTouchId === e.pointerId) {
                 actionState.attackPressed = true;
             }
@@ -110,6 +144,12 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
                 joystickState.joystickKnob.x = joystickState.joystickBase.x;
                 joystickState.joystickKnob.y = joystickState.joystickBase.y;
             }
+            if (e.pointerId === lookJoystickState.joystickTouchId) {
+                lookJoystickState.joystickTouchId = null;
+                lookJoystickState.joystickActive = false;
+                lookJoystickState.joystickKnob.x = lookJoystickState.joystickBase.x;
+                lookJoystickState.joystickKnob.y = lookJoystickState.joystickBase.y;
+            }
             if (e.pointerId === actionState.actionTouchId) {
                 actionState.actionTouchId = null;
                 actionState.attackPressed = false;
@@ -122,6 +162,12 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
                 joystickState.joystickActive = false;
                 joystickState.joystickKnob.x = joystickState.joystickBase.x;
                 joystickState.joystickKnob.y = joystickState.joystickBase.y;
+            }
+            if (e.pointerId === lookJoystickState.joystickTouchId) {
+                lookJoystickState.joystickTouchId = null;
+                lookJoystickState.joystickActive = false;
+                lookJoystickState.joystickKnob.x = lookJoystickState.joystickBase.x;
+                lookJoystickState.joystickKnob.y = lookJoystickState.joystickBase.y;
             }
             if (e.pointerId === actionState.actionTouchId) {
                 actionState.actionTouchId = null;
@@ -297,32 +343,38 @@ export function createInputSystem(uiCanvas, settings, toggleSettings) {
             joystickState.joystickActive = false;
             joystickState.joystickKnob.x = joystickState.joystickBase.x;
             joystickState.joystickKnob.y = joystickState.joystickBase.y;
+            lookJoystickState.joystickActive = false;
+            lookJoystickState.joystickKnob.x = lookJoystickState.joystickBase.x;
+            lookJoystickState.joystickKnob.y = lookJoystickState.joystickBase.y;
             return;
         }
 
-        const rawX = pad.axes[0];
-        const rawY = pad.axes[1];
-        const magnitude = Math.hypot(rawX, rawY);
+        const applyAxesToStick = (targetState, rawX, rawY) => {
+            const magnitude = Math.hypot(rawX, rawY);
+            if (magnitude <= gamepadState.deadzone) {
+                targetState.joystickActive = false;
+                targetState.joystickKnob.x = targetState.joystickBase.x;
+                targetState.joystickKnob.y = targetState.joystickBase.y;
+                return;
+            }
+            const scaledMagnitude = Math.min(1, (magnitude - gamepadState.deadzone) / (1 - gamepadState.deadzone));
+            const nx = (rawX / magnitude) * scaledMagnitude;
+            const ny = (rawY / magnitude) * scaledMagnitude;
+            targetState.joystickActive = true;
+            targetState.joystickKnob.x = targetState.joystickBase.x + nx * targetState.joystickRadius;
+            targetState.joystickKnob.y = targetState.joystickBase.y + ny * targetState.joystickRadius;
+        };
 
-        if (magnitude <= gamepadState.deadzone) {
-            joystickState.joystickActive = false;
-            joystickState.joystickKnob.x = joystickState.joystickBase.x;
-            joystickState.joystickKnob.y = joystickState.joystickBase.y;
-            return;
+        applyAxesToStick(joystickState, pad.axes[0], pad.axes[1]);
+        if (pad.axes.length >= 4) {
+            applyAxesToStick(lookJoystickState, pad.axes[2], pad.axes[3]);
         }
-
-        const scaledMagnitude = Math.min(1, (magnitude - gamepadState.deadzone) / (1 - gamepadState.deadzone));
-        const nx = (rawX / magnitude) * scaledMagnitude;
-        const ny = (rawY / magnitude) * scaledMagnitude;
-
-        joystickState.joystickActive = true;
-        joystickState.joystickKnob.x = joystickState.joystickBase.x + nx * joystickState.joystickRadius;
-        joystickState.joystickKnob.y = joystickState.joystickBase.y + ny * joystickState.joystickRadius;
     }
 
     return {
         keyState,
         joystickState,
+        lookJoystickState,
         actionState,
         setControlPositions,
         attachInputListeners,

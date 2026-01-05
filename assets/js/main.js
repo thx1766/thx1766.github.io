@@ -29,6 +29,7 @@ import { createRenderer } from './render.js';
         enableWeapons: true,
         renderMode: storedRenderMode === '3d' ? '3d' : '2d',
         isRenderTransitioning: false,
+        pendingRenderMode: null,
     };
 
     const debugState = {
@@ -53,7 +54,7 @@ import { createRenderer } from './render.js';
 
     let uiControls;
     const inputSystem = createInputSystem(uiCanvas, settings, () => uiControls.toggleSettings());
-    const gameplay = createGameplaySystem(settings, inputSystem.keyState, inputSystem.joystickState, inputSystem.actionState, debugState);
+    const gameplay = createGameplaySystem(settings, inputSystem.keyState, inputSystem.joystickState, inputSystem.lookJoystickState, inputSystem.actionState, debugState);
 
     uiControls = setupSettingsUI({
         settingsPanel,
@@ -84,7 +85,7 @@ import { createRenderer } from './render.js';
         onRenderModeChange: (mode) => handleRenderModeChange(mode),
     });
 
-    const renderer = createRenderer(gameCanvas, uiCanvas, settings, gameplay, inputSystem.joystickState, inputSystem.actionState, inputSystem.setControlPositions, debugState);
+    const renderer = createRenderer(gameCanvas, uiCanvas, settings, gameplay, inputSystem.joystickState, inputSystem.lookJoystickState, inputSystem.actionState, inputSystem.setControlPositions, debugState);
 
     let inventoryCache = '';
 
@@ -191,13 +192,22 @@ import { createRenderer } from './render.js';
     function handleRenderModeChange(mode) {
         if (settings.isRenderTransitioning || settings.renderMode === mode) return;
         settings.isRenderTransitioning = true;
+        settings.pendingRenderMode = mode;
         uiControls.setRenderTransitioning(true);
         renderer.requestRenderMode(mode, (appliedMode) => {
             settings.renderMode = appliedMode;
             settings.isRenderTransitioning = false;
+            settings.pendingRenderMode = null;
             uiControls.setRenderMode(appliedMode);
             uiControls.setRenderTransitioning(false);
             localStorage.setItem('renderModePreference', appliedMode);
+            if (appliedMode === '2d') {
+                const lookStick = inputSystem.lookJoystickState;
+                lookStick.joystickTouchId = null;
+                lookStick.joystickActive = false;
+                lookStick.joystickKnob.x = lookStick.joystickBase.x;
+                lookStick.joystickKnob.y = lookStick.joystickBase.y;
+            }
         });
     }
 })();
