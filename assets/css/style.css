@@ -41,6 +41,7 @@ canvas {
 }
 
 #renderModeToggle,
+#pointerLockToggle,
 #settingsToggle,
 #debugToggle,
 #inventoryToggle {
@@ -56,6 +57,7 @@ canvas {
 }
 
 #renderModeToggle:active,
+#pointerLockToggle:active,
 #settingsToggle:active,
 #debugToggle:active,
 #inventoryToggle:active {
@@ -66,6 +68,22 @@ canvas {
     background: linear-gradient(135deg, #1abc9c, #16a085);
     border-color: #0e8d72;
     font-weight: 700;
+}
+
+#pointerLockToggle {
+    background: linear-gradient(135deg, #2980b9, #2471a3);
+    border-color: #1f618d;
+}
+
+#pointerLockToggle.is-active {
+    background: linear-gradient(135deg, #1f618d, #154360);
+    box-shadow: 0 0 10px rgba(36, 113, 163, 0.7);
+}
+
+#pointerLockToggle:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
 #renderModeToggle.is-transitioning {
