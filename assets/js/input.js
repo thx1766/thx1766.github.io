@@ -1,4 +1,4 @@
-export function createInputSystem(gameCanvas, uiCanvas, settings, toggleSettings, onPointerLockChange) {
+export function createInputSystem(gameCanvas, uiCanvas, settings, toggleSettings, onPointerLockChange, debugState = {}) {
     const keyState = { up: false, down: false, left: false, right: false };
     const joystickState = {
         joystickTouchId: null,
@@ -416,7 +416,8 @@ export function createInputSystem(gameCanvas, uiCanvas, settings, toggleSettings
             return;
         }
 
-        const applyAxesToStick = (targetState, rawX, rawY) => {
+        const applyAxesToStick = (targetState, rawX, rawY, options = {}) => {
+            const curve = Math.max(1, options.curve || 1);
             const magnitude = Math.hypot(rawX, rawY);
             if (magnitude <= gamepadState.deadzone) {
                 targetState.joystickActive = false;
@@ -425,8 +426,9 @@ export function createInputSystem(gameCanvas, uiCanvas, settings, toggleSettings
                 return;
             }
             const scaledMagnitude = Math.min(1, (magnitude - gamepadState.deadzone) / (1 - gamepadState.deadzone));
-            const nx = (rawX / magnitude) * scaledMagnitude;
-            const ny = (rawY / magnitude) * scaledMagnitude;
+            const curvedMagnitude = Math.pow(scaledMagnitude, curve);
+            const nx = (rawX / magnitude) * curvedMagnitude;
+            const ny = (rawY / magnitude) * curvedMagnitude;
             targetState.joystickActive = true;
             targetState.joystickKnob.x = targetState.joystickBase.x + nx * targetState.joystickRadius;
             targetState.joystickKnob.y = targetState.joystickBase.y + ny * targetState.joystickRadius;
@@ -434,7 +436,7 @@ export function createInputSystem(gameCanvas, uiCanvas, settings, toggleSettings
 
         applyAxesToStick(joystickState, pad.axes[0], pad.axes[1]);
         if (pad.axes.length >= 4) {
-            applyAxesToStick(lookJoystickState, pad.axes[2], pad.axes[3]);
+            applyAxesToStick(lookJoystickState, pad.axes[2], pad.axes[3], { curve: debugState.lookStickCurve });
         }
     }
 

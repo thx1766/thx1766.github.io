@@ -36,6 +36,8 @@ import { createRenderer } from './render.js';
     const debugState = {
         showColliders: false,
         freezeOnCollision: true,
+        lookStickCurve: 1.35,
+        lookStickTurnRate: 0.14,
     };
 
     const formRefs = {
@@ -50,11 +52,15 @@ import { createRenderer } from './render.js';
     const debugRefs = {
         showColliders: document.getElementById('showColliders'),
         freezeOnCollision: document.getElementById('freezeOnCollision'),
+        lookStickCurve: document.getElementById('lookStickCurve'),
+        lookStickCurveValue: document.getElementById('lookStickCurveValue'),
+        lookStickTurnRate: document.getElementById('lookStickTurnRate'),
+        lookStickTurnRateValue: document.getElementById('lookStickTurnRateValue'),
         skipLevel2: document.getElementById('skipLevel2'),
     };
 
     let uiControls;
-    const inputSystem = createInputSystem(gameCanvas, uiCanvas, settings, () => uiControls.toggleSettings(), handlePointerLockChange);
+    const inputSystem = createInputSystem(gameCanvas, uiCanvas, settings, () => uiControls.toggleSettings(), handlePointerLockChange, debugState);
     const gameplay = createGameplaySystem(settings, inputSystem.keyState, inputSystem.joystickState, inputSystem.lookJoystickState, inputSystem.actionState, { state: inputSystem.pointerLockState, consumePointerLookDelta: inputSystem.consumePointerLookDelta }, debugState);
 
     uiControls = setupSettingsUI({
